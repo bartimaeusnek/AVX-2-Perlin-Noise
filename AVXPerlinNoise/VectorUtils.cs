@@ -61,6 +61,29 @@ namespace AVXPerlinNoise
                 return LoadVector256(add);
             }
         }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static unsafe Vector256<float> LoadVectorCorrectly(float count)
+        {
+            var tobe = stackalloc float[1];
+            tobe[0] = count;
+            return BroadcastScalarToVector256(tobe);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static unsafe Vector256<uint> LoadVectorCorrectly(uint count)
+        {
+            var tobe = stackalloc uint[1];
+            tobe[0] = count;
+            return BroadcastScalarToVector256(tobe);
+        }
+		
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static unsafe Vector256<int> LoadVectorCorrectly(int count)
+        {
+            var tobe = stackalloc int[1];
+            tobe[0] = count;
+            return BroadcastScalarToVector256(tobe);
+        }
 
     }
 }

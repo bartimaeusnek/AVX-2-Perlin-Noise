@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using static System.Runtime.Intrinsics.X86.Avx2;
 using static System.Runtime.Intrinsics.X86.Avx;
+using static AVXPerlinNoise.VectorUtils;
 
 namespace AVXPerlinNoise
 {
@@ -24,29 +25,6 @@ namespace AVXPerlinNoise
 		private static readonly Vector256<float> v15f = LoadVectorCorrectly(15f);
 		private static readonly Vector256<int> v15 = LoadVectorCorrectly(15);
 		
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		private static unsafe Vector256<float> LoadVectorCorrectly(float count)
-		{
-			var tobe = stackalloc float[1];
-			tobe[0] = count;
-			return BroadcastScalarToVector256(tobe);
-		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		private static unsafe Vector256<uint> LoadVectorCorrectly(uint count)
-		{
-			var tobe = stackalloc uint[1];
-			tobe[0] = count;
-			return BroadcastScalarToVector256(tobe);
-		}
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		private static unsafe Vector256<int> LoadVectorCorrectly(int count)
-		{
-			var tobe = stackalloc int[1];
-			tobe[0] = count;
-			return BroadcastScalarToVector256(tobe);
-		}
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static Vector256<float> perlinAVX(Vector256<float> x, Vector256<float> y, Vector256<float> z)
@@ -136,19 +114,7 @@ namespace AVXPerlinNoise
 		{
 			fixed (int* pData = &p[0])
 			{
-				var arr = stackalloc int[8];
-				Store(arr, xi);
-				
-				arr[0] = *(pData + arr[0]);
-				arr[1] = *(pData + arr[1]);
-				arr[2] = *(pData + arr[2]);
-				arr[3] = *(pData + arr[3]);
-				arr[4] = *(pData + arr[4]);
-				arr[5] = *(pData + arr[5]);
-				arr[6] = *(pData + arr[6]);
-				arr[7] = *(pData + arr[7]);
-
-				return LoadVector256(arr);
+				return GatherVector256(pData, xi, sizeof(int));
 			}
 		}
 
@@ -156,8 +122,7 @@ namespace AVXPerlinNoise
 		public static Vector256<float> gradAVXUVector(Vector256<int> hashs, Vector256<float> xs, Vector256<float> ys)
 		{
 			// If the most signifigant bit (MSB) of the hash is 0 then set u = x.  Otherwise y.
-			var MSB = v8;
-			var h   = CompareGreaterThan(MSB, hashs);
+			var h   = CompareGreaterThan(v8, hashs);
 
 			var usX = And(h.AsSingle(), xs);
 			var usY = AndNot(h.AsSingle(), ys);
@@ -169,8 +134,7 @@ namespace AVXPerlinNoise
 		public static Vector256<float> gradAVXVYVector(Vector256<int> hashs, Vector256<float> ys)
 		{
 			// If the first and second signifigant bits are 0 set v = y
-			var SSB  = v4;
-			var ssbh = CompareGreaterThan(SSB, hashs); // "< 4" == "4 >" 
+			var ssbh = CompareGreaterThan(v4, hashs); // "< 4" == "4 >" 
 
 			return And(ssbh.AsSingle(), ys);
 		}
@@ -310,90 +274,6 @@ namespace AVXPerlinNoise
 			tobe[6] = (count * mod * mod * mod * mod * mod       * mod);
 			tobe[7] = (count * mod * mod * mod * mod * mod * mod * mod);
 			return LoadVector256(tobe);
-		}
-		
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		private static unsafe Vector256<int> UnpackPermutationArrayExperimental(Vector256<int> xi)
-		{
-			fixed (int* pData = &p[0])
-			{
-				
-				var arrc = stackalloc uint[8];
-				Store(arrc, xi.AsUInt32());
-				
-				arrc[0] = (uint)*(pData + arrc[0]);
-				arrc[1] = (uint)*(pData + arrc[1]);
-				arrc[2] = (uint)*(pData + arrc[2]);
-				arrc[3] = (uint)*(pData + arrc[3]);
-				arrc[4] = (uint)*(pData + arrc[4]);
-				arrc[5] = (uint)*(pData + arrc[5]);
-				arrc[6] = (uint)*(pData + arrc[6]);
-				arrc[7] = (uint)*(pData + arrc[7]);
-				
-				var ptrData = (uint) pData;
-				// Console.WriteLine((uint) arrc);
-				// Console.WriteLine(ptrData);
-				var offset = LoadVectorCorrectly(ptrData);
-
-				var arr = stackalloc int[8];
-				var OffsetVec = Add(xi, Multiply(xi.AsSingle(),LoadVectorCorrectly(3f)).AsInt32());
-				var offsettedPTR = Add(offset.AsUInt32(), OffsetVec.AsUInt32());
-				
-				Store(arr, offsettedPTR.AsInt32());
-				
-				Console.WriteLine((uint) arrc);
-				Console.WriteLine(ptrData);
-				string cwElement0 = $"0 ARRC Value: {arrc[0]} OffsetVecValue: {OffsetVec.GetElement(0)}";
-				string cwElement1 = $"1 ARRC Value: {arrc[1]} OffsetVecValue: {OffsetVec.GetElement(1)}";
-				string cwElement2 = $"2 ARRC Value: {arrc[2]} OffsetVecValue: {OffsetVec.GetElement(2)}";
-				string cwElement3 = $"3 ARRC Value: {arrc[3]} OffsetVecValue: {OffsetVec.GetElement(3)}";
-				string cwElement4 = $"4 ARRC Value: {arrc[4]} OffsetVecValue: {OffsetVec.GetElement(4)}";
-				string cwElement5 = $"5 ARRC Value: {arrc[5]} OffsetVecValue: {OffsetVec.GetElement(5)}";
-				string cwElement6 = $"6 ARRC Value: {arrc[6]} OffsetVecValue: {OffsetVec.GetElement(6)}";
-				string cwElement7 = $"7 ARRC Value: {arrc[7]} OffsetVecValue: {OffsetVec.GetElement(7)}";
-				
-				cwElement0 += $" Correct PTR: {(uint)(pData + arrc[0])};";
-				cwElement1 += $" Correct PTR: {(uint)(pData + arrc[1])};";
-				cwElement2 += $" Correct PTR: {(uint)(pData + arrc[2])};";
-				cwElement3 += $" Correct PTR: {(uint)(pData + arrc[3])};";
-				cwElement4 += $" Correct PTR: {(uint)(pData + arrc[4])};";
-				cwElement5 += $" Correct PTR: {(uint)(pData + arrc[5])};";
-				cwElement6 += $" Correct PTR: {(uint)(pData + arrc[6])};";
-				cwElement7 += $" Correct PTR: {(uint)(pData + arrc[7])};";
-				Store(arrc, offsettedPTR);
-				Console.WriteLine((uint) arrc);
-				Console.WriteLine(ptrData);
-				cwElement0+=$" Actual PTR: {(uint)(int*)arrc[0]}";
-				cwElement1+=$" Actual PTR: {(uint)(int*)arrc[1]}";
-				cwElement2+=$" Actual PTR: {(uint)(int*)arrc[2]}";
-				cwElement3+=$" Actual PTR: {(uint)(int*)arrc[3]}";
-				cwElement4+=$" Actual PTR: {(uint)(int*)arrc[4]}";
-				cwElement5+=$" Actual PTR: {(uint)(int*)arrc[5]}";
-				cwElement6+=$" Actual PTR: {(uint)(int*)arrc[6]}";
-				cwElement7+=$" Actual PTR: {(uint)(int*)arrc[7]}";
-				Console.WriteLine((uint) arrc);
-				Console.WriteLine(ptrData);
-				Console.WriteLine(cwElement0);
-				Console.WriteLine(cwElement1);
-				Console.WriteLine(cwElement2);
-				Console.WriteLine(cwElement3);
-				Console.WriteLine(cwElement4);
-				Console.WriteLine(cwElement5);
-				Console.WriteLine(cwElement6);
-				Console.WriteLine(cwElement7);
-				
-				// arr[0] = *(int*)arr[0];
-				// arr[1] = *(int*)arr[1];
-				// arr[2] = *(int*)arr[2];
-				// arr[3] = *(int*)arr[3];
-				// arr[4] = *(int*)arr[4];
-				// arr[5] = *(int*)arr[5];
-				// arr[6] = *(int*)arr[6];
-				// arr[7] = *(int*)arr[7];
-
-				return LoadVectorCorrectly(0); //LoadVector256(arr).AsInt32();
-			}
 		}
 	}
 }
