@@ -1,0 +1,66 @@
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+using static System.Runtime.Intrinsics.X86.Avx2;
+using static System.Runtime.Intrinsics.X86.Avx;
+
+namespace AVXPerlinNoise
+{
+    public class VectorUtils
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector256<int> ConvertToVector256Int32(Vector256<double> doubleV1, Vector256<double> doubleV2)
+            => Vector256.Create(ConvertToVector128Int32(doubleV1), ConvertToVector128Int32(doubleV2));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector256<int> ConvertToVector256Int32(Vector256<double> doubleV1)
+            => Vector256.Create(ConvertToVector128Int32(doubleV1), Vector128<int>.Zero);
+        
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector128<int> ConvertToVector128Int32(Vector256<double> doubleV)
+            => ConvertToVector128Int32WithTruncation(doubleV);
+        
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector256<double> ConvertToVector256Double(Vector256<int> intVector128)
+            => Avx.ConvertToVector256Double(intVector128.GetLower());
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe Vector256<int> Create(int[] a)
+        {
+            fixed(int* add = &a[0])
+            {
+                return LoadVector256(add);
+            }
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe Vector256<float> Create(float[] a)
+        {
+            fixed(float* add = &a[0])
+            {
+                return LoadVector256(add);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe Vector256<long> Create(long[] a)
+        {
+            fixed(long* add = &a[0])
+            {
+                return LoadVector256(add);
+            }
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe Vector256<double> Create(double[] a)
+        {
+            fixed(double* add = &a[0])
+            {
+                return LoadVector256(add);
+            }
+        }
+
+    }
+}
