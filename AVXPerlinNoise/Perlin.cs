@@ -4,24 +4,6 @@ namespace AVXPerlinNoise
 {
 	public partial class Perlin
 	{
-
-		public static double OctavePerlin(double x, double y, double z, int octaves, double persistence)
-		{
-			double total     = 0;
-			double frequency = 1;
-			double amplitude = 1;
-			for (int i = 0; i < octaves; i++)
-			{
-				var prl = perlin(x * frequency, y * frequency, z * frequency);
-				total += prl * amplitude;
-				Console.WriteLine(total);
-				amplitude *= persistence;
-				frequency *= 2;
-			}
-
-			return total;
-		}
-
 		private static readonly int[] permutation =
 		{
 			151, 160, 137, 91, 90, 15, // Hash lookup table as defined by Ken Perlin.  This is a randomly
@@ -50,14 +32,32 @@ namespace AVXPerlinNoise
 			138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195,
 			78, 66, 215, 61, 156, 180
 		};
+		
+		public static float OctavePerlin(float x, float y, float z, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
+		{
+			var freq  = 1.0f;
+			var amp   = 1.0f;
+			var max   = 0.0f;
+			var total = 0.0f;
+			for (int i = 0; i < nOctaves; ++i)
+			{
+				var value = perlin(x * freq / scale, y * freq / scale, z * freq / scale);
+				total += amp * value;
+				max   += amp;
+				freq  *= lacunarity;
+				amp   *= persistence;
+			}
 
+			return total / max;
+		}
+		
 		public static void init()
 		{
 			Console.WriteLine("Init Perlin class");
 		}
 
-		private static readonly int[]  p; // Doubled permutation to avoid overflow
-		private static readonly long[] pL;
+		internal static readonly int[]  p; // Doubled permutation to avoid overflow
+		internal static readonly long[] pL;
 
 		static Perlin()
 		{

@@ -93,6 +93,24 @@ namespace PerlinTests
             return this.retlerp;
         }
     }
+    
+    [RPlotExporter, MarkdownExporterAttribute]
+    public class PerlinOctaveBench : BaseBenchmark
+    {
+        [Benchmark]
+        public float AVX2()
+        {
+            var result = Perlin.OctavePerlinAVX(this._xs[0], this._ys[0], this._zs[0]);
+            return result;
+        }
+
+        [Benchmark(Baseline = true)]
+        public float Regular()
+        {
+            var result = Perlin.OctavePerlin(this._xs[0], this._ys[0], this._zs[0]);
+            return result;
+        }
+    }
 
      public class Program
      {
@@ -101,7 +119,8 @@ namespace PerlinTests
             // BenchmarkRunner.Run<Grad>();
             // BenchmarkRunner.Run<Lerp>();
             // BenchmarkRunner.Run<Fade>();
-            BenchmarkRunner.Run<PerlinBench>();
+            // BenchmarkRunner.Run<PerlinBench>();
+            BenchmarkRunner.Run<PerlinOctaveBench>();
          }
      }
 }
