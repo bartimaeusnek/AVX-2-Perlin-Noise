@@ -144,50 +144,20 @@ namespace AVXPerlinNoise
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		internal static Vector256<float> gradAVXVYVector(Vector256<int> hashs, Vector256<float> ys)
-		{
-			var ssbh = CompareGreaterThan(v4, hashs); // "< 4" == "4 >" 
-
-			return And(ssbh.AsSingle(), ys);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		internal static Vector256<float> gradAVXVXVector(Vector256<int> hashs, Vector256<float> xs)
+		internal static Vector256<float> gradAVXVVector(Vector256<int>   hashs, Vector256<float> xs, Vector256<float> ys,
+		                                                Vector256<float> zs)
 		{
 			var TSB1h = CompareEqual(hashs, v12);
 			var TSB2h = CompareEqual(hashs, v14);
 
+			var ssbh = CompareGreaterThan(v4, hashs);
+
+			var zMask = Xor(Xor(TSB1h, TSB2h), ssbh);
+			
 			var vsX1 = And(TSB1h.AsSingle(), xs);
 			var vsX2 = And(TSB2h.AsSingle(), xs);
 
-			return Add(vsX1, vsX2);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		internal static Vector256<float> gradAVXVZVector(Vector256<int> hashs, Vector256<float> zs)
-		{
-			var bigger3   = CompareGreaterThan(hashs, v3);
-			var smaller12 = CompareGreaterThan(v12,  hashs);
-			
-			var range1 = And(bigger3, smaller12);
-			
-			var eq13 = CompareEqual(hashs, v13);
-			var eq15 = CompareEqual(hashs, v15);
-			
-			var range = Or(range1, Or(eq13,eq15));
-			
-			return And(range.AsSingle(), zs);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		internal static Vector256<float> gradAVXVVector(Vector256<int>   hashs, Vector256<float> xs, Vector256<float> ys,
-		                                                Vector256<float> zs)
-		{
-			var VX = gradAVXVXVector(hashs, xs);
-			var VY = gradAVXVYVector(hashs, ys);
-			var VZ = gradAVXVZVector(hashs, zs);
-
-			return Add(Add(VX, VY), VZ);
+			return Add(Add(Add(vsX1, vsX2), And(ssbh.AsSingle(), ys)), AndNot(zMask.AsSingle(), zs));
 		}
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -213,8 +183,7 @@ namespace AVXPerlinNoise
 			var ucompneg = Subtract(Vector256<float>.Zero, And(hOnes.AsSingle(), u));
 			return Add(ucomp, ucompneg);
 		}
-
-
+		
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		internal static Vector256<float> gradAVX(Vector256<int>   hashs, Vector256<float> xs, Vector256<float> ys,
 		                                         Vector256<float> zs)

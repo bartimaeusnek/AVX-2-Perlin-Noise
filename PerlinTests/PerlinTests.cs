@@ -53,10 +53,10 @@ namespace PerlinTests
         {
             var xV = VectorUtils.Create(this._xsD);
             var result = Perlin.fadeAVX(xV);
-            Assert.AreEqual(Perlin.fade(2), result.GetElement(0));
-            Assert.AreEqual(Perlin.fade(3), result.GetElement(1));
-            Assert.AreEqual(Perlin.fade(5), result.GetElement(2));
-            Assert.AreEqual(Perlin.fade(7), result.GetElement(3));
+            for (var i = 0; i < 8; i++)
+            {
+                Assert.AreEqual(Perlin.fade(this._xsD[i]), result.GetElement(i));
+            }
         }
         
         [TestMethod]
@@ -90,42 +90,6 @@ namespace PerlinTests
             }
         }
 
-        [TestMethod]
-        public void TestGradVY()
-        {
-            var hashsV = VectorUtils.Create(this._hashsAnd15L);
-            var yV = VectorUtils.Create(this._ysD);
-            var result = Perlin.gradAVXVYVector(hashsV, yV);
-            for (var i = 0; i < this._hashsAnd15L.Length; i++)
-            {
-                Assert.AreEqual(Perlin.gradVY(this._hashsAnd15[i], this._ysD[i]), result.GetElement(i));
-            }
-        }
-        
-        [TestMethod]
-        public void TestGradVX()
-        {
-            var hashsV = VectorUtils.Create(this._hashsAnd15L);
-            var xV     = VectorUtils.Create(this._xsD);
-            var result = Perlin.gradAVXVXVector(hashsV, xV);
-            for (var i = 0; i < this._hashsAnd15L.Length; i++)
-            {
-                Assert.AreEqual(Perlin.gradVX(this._hashsAnd15[i], this._xsD[i]), result.GetElement(i));
-            }
-        }
-        
-        [TestMethod]
-        public void TestGradVZ()
-        {
-            var hashsV = VectorUtils.Create(this._hashsAnd15L);
-            var zV     = VectorUtils.Create(this._zsD);
-            var result = Perlin.gradAVXVZVector(hashsV, zV);
-            for (var i = 0; i < this._hashsAnd15L.Length; i++)
-            {
-                Assert.AreEqual( Perlin.gradVZ(this._hashsAnd15[i], this._zsD[i]), result.GetElement(i));
-            }
-        }
-        
         [TestMethod]
         public void TestGradU()
         {

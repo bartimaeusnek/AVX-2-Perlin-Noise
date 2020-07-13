@@ -2,11 +2,12 @@
 using System.Runtime.Intrinsics;
 using AVXPerlinNoise;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Running;
 
 namespace PerlinTests
 {
-    [RPlotExporter, MarkdownExporterAttribute]
+    [MarkdownExporterAttribute]
     public class Grad : BaseBenchmark
     {
         [Benchmark]
@@ -28,7 +29,7 @@ namespace PerlinTests
         }
     }
     
-    [RPlotExporter, MarkdownExporterAttribute]
+    [MarkdownExporterAttribute]
     public class Lerp : BaseBenchmark
     {
         [Benchmark]
@@ -50,7 +51,7 @@ namespace PerlinTests
         }
     }
     
-    [RPlotExporter, MarkdownExporterAttribute]
+    [MarkdownExporterAttribute]
     public class Fade : BaseBenchmark
     {
         [Benchmark]
@@ -72,7 +73,7 @@ namespace PerlinTests
         }
     }
     
-    [RPlotExporter, MarkdownExporterAttribute]
+    [MarkdownExporterAttribute]
     public class PerlinBench : BaseBenchmark
     {
         [Benchmark]
@@ -94,7 +95,7 @@ namespace PerlinTests
         }
     }
     
-    [RPlotExporter, MarkdownExporterAttribute]
+    [MarkdownExporterAttribute, SimpleJob(RunStrategy.Throughput)]
     public class PerlinOctaveBench : BaseBenchmark
     {
         [Benchmark]
