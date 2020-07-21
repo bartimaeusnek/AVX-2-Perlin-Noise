@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
 using AVXPerlinNoise;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
@@ -8,8 +9,7 @@ using BenchmarkDotNet.Running;
 
 namespace PerlinTests
 {
-    [ExcludeFromCodeCoverage]
-    [MarkdownExporterAttribute]
+    [ExcludeFromCodeCoverage,MarkdownExporterAttribute]
     public class Grad : BaseBenchmark
     {
         [Benchmark]
@@ -31,8 +31,7 @@ namespace PerlinTests
         }
     }
 
-    [ExcludeFromCodeCoverage]
-    [MarkdownExporterAttribute]
+    [ExcludeFromCodeCoverage,MarkdownExporterAttribute]
     public class Lerp : BaseBenchmark
     {
         [Benchmark]
@@ -54,8 +53,7 @@ namespace PerlinTests
         }
     }
 
-    [ExcludeFromCodeCoverage]
-    [MarkdownExporterAttribute]
+    [ExcludeFromCodeCoverage,MarkdownExporterAttribute]
     public class Fade : BaseBenchmark
     {
         [Benchmark]
@@ -77,8 +75,7 @@ namespace PerlinTests
         }
     }
 
-    [ExcludeFromCodeCoverage]
-    [MarkdownExporterAttribute]
+    [ExcludeFromCodeCoverage,MarkdownExporterAttribute]
     public class PerlinBench : BaseBenchmark
     {
         [Benchmark]
@@ -100,21 +97,53 @@ namespace PerlinTests
         }
     }
 
-    [ExcludeFromCodeCoverage]
-    [MarkdownExporterAttribute, SimpleJob(RunStrategy.Throughput)]
+    [ExcludeFromCodeCoverage,MarkdownExporterAttribute,SimpleJob(RunStrategy.Throughput)]
     public class PerlinOctaveBench : BaseBenchmark
+    {
+        [Benchmark]
+        public float[] AVX2Parallel()
+        {
+            var results = Perlin.OctavePerlinAVX(this.xV, this.yV, this.zV);
+            return results;
+        }
+        
+        [Benchmark]
+        public float[] AVX2()
+        {
+            float[] results = new float[8];
+            for (int i = 0; i < 8; i++)
+            {
+                results[i] = Perlin.OctavePerlinAVX(this._xs[0], this._ys[0], this._zs[0]);
+            }
+            return results;
+        }
+
+        [Benchmark(Baseline = true)]
+        public float[] Regular()
+        {
+            float[] results = new float[8];
+            for (int i = 0; i < 8; i++)
+            {
+                results[i] = Perlin.OctavePerlin(this._xs[0], this._ys[0], this._zs[0]);
+            }
+            return results;
+        }
+    }
+    
+    [ExcludeFromCodeCoverage,MarkdownExporterAttribute,SimpleJob(RunStrategy.Throughput)]
+    public class PerlinOctaveBenchx32 : BaseBenchmark
     {
         [Benchmark]
         public float AVX2()
         {
-            var result = Perlin.OctavePerlinAVX(this._xs[0], this._ys[0], this._zs[0]);
+            var result = Perlin.OctavePerlinAVX(this._xs[0], this._ys[0], this._zs[0], 32);
             return result;
         }
 
         [Benchmark(Baseline = true)]
         public float Regular()
         {
-            var result = Perlin.OctavePerlin(this._xs[0], this._ys[0], this._zs[0]);
+            var result = Perlin.OctavePerlin(this._xs[0], this._ys[0], this._zs[0], 32);
             return result;
         }
     }
@@ -129,6 +158,7 @@ namespace PerlinTests
             // BenchmarkRunner.Run<Fade>();
             // BenchmarkRunner.Run<PerlinBench>();
             BenchmarkRunner.Run<PerlinOctaveBench>();
+            //BenchmarkRunner.Run<PerlinOctaveBenchx32>();
         }
     }
 }

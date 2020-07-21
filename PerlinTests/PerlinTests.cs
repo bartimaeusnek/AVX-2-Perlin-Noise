@@ -67,11 +67,9 @@ namespace PerlinTests
             var yV     = VectorUtils.Create(this._ysD);
             var zV     = VectorUtils.Create(this._zsD);
             var result = Perlin.lerpAVX( xV, yV, zV);
-            Console.WriteLine(result);
             for (int i = 0; i < 8; i++)
             {
                 var lerp = Perlin.lerp(this._xsD[i], this._ysD[i], this._zsD[i]);
-                Console.WriteLine(lerp);
                 Assert.AreEqual(lerp, result.GetElement(i));
             }
         }
@@ -275,11 +273,9 @@ namespace PerlinTests
             var xV     = VectorUtils.Create(this._xsD);
             var zV     = VectorUtils.Create(this._zsD);
             var result = Perlin.perlinAVX(xV, yV, zV);
-            Console.WriteLine(result);
             for (var i = 0; i < this._hashsL.Length; i++)
             {
                 var prl = Perlin.perlin(this._xsD[i], this._ysD[i], this._zsD[i]);
-                Console.WriteLine(prl);
                 Assert.AreEqual(prl, result.GetElement(i));
             }
         }
@@ -317,6 +313,22 @@ namespace PerlinTests
                 Assert.AreEqual("nOctaves has to be divide able by 8!",e.Message);
             }
             
+        }
+
+        [TestMethod]
+        public void TestOctavesParallel()
+        {
+            var yV = VectorUtils.Create(this._ysD);
+            var xV = VectorUtils.Create(this._xsD);
+            var zV = VectorUtils.Create(this._zsD);
+            var result =  Perlin.OctavePerlinAVX(xV, yV, zV);
+            var resultParallel =  Perlin.OctavePerlinAVXParallel(xV, yV, zV);
+            for (int i = 0; i < 8; i++)
+            {
+                var prl = Perlin.OctavePerlin(this._xsD[i], this._ysD[i], this._zsD[i]);
+                Assert.AreEqual(prl, result[i]);
+                Assert.AreEqual(prl, resultParallel.GetElement(i));
+            }
         }
     }
 }

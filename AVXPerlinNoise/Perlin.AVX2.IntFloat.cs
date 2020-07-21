@@ -211,37 +211,79 @@ namespace AVXPerlinNoise
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static float OctavePerlinAVX(float x, float y, float z, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
+		public static unsafe float OctavePerlinAVX(float x, float y, float z, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
 		{
 			if (nOctaves % 8 != 0)
 				throw new ArgumentException($"{nameof(nOctaves)} has to be divide able by 8!");
+
+			var freq = stackalloc float[1]{1f};
+			var amp = stackalloc float[1]{1f};
+			var i = stackalloc int[1]{1};
+			var max   = stackalloc float[1]{0.0f};
+			var total = stackalloc float[1]{0.0f};
 			
-			var freq  = 1.0f;
-			var amp   = 1.0f;
-			var max   = 0.0f;
-			var total = 0.0f;
-			var i = 0;
-			
-			while(true) {
+			do
+			{
 				var valueVector = perlinAVX(
-				                            LoadVectorWithModScale(x, lacunarity, freq, scale),
-				                            LoadVectorWithModScale(y, lacunarity, freq, scale),
-				                            LoadVectorWithModScale(z, lacunarity, freq, scale)
+				                            LoadVectorWithModScale(x, lacunarity, *freq, scale),
+				                            LoadVectorWithModScale(y, lacunarity, *freq, scale),
+				                            LoadVectorWithModScale(z, lacunarity, *freq, scale)
 				                           );
 
-				var ampVector   = LoadVectorWithMod(amp, persistence);
+				var ampVector   = LoadVectorWithMod(*amp, persistence);
 				var totalVector = Multiply(ampVector, valueVector);
 
-				max   += SumVector(ampVector);
-				total += SumVector(totalVector);
-				i     += 8;
-				if (i >= nOctaves)
+				*max   += SumVector(ampVector);
+				*total += SumVector(totalVector);
+				*i     += 8;
+				if (*i >= nOctaves)
 					break;
-				amp  *= (float) Math.Pow(persistence, 8);
-				freq *= (float) Math.Pow(lacunarity, 8);
-			}
-			
-			return total / max;
+				*amp  *= PseudoPow8(persistence);
+				*freq *= PseudoPow8(lacunarity);
+			} while (true);
+
+			return *total / *max;
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		public static unsafe float[] OctavePerlinAVX(Vector256<float> x, Vector256<float> y, Vector256<float> z, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
+		{
+			var results = new float[8];
+			fixed (float* ptr = &results[0])
+			{
+				Store(ptr, OctavePerlinAVXParallel(x, y, z,nOctaves,persistence,lacunarity,scale));
+			}
+			return results;
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		public static Vector256<float> OctavePerlinAVXParallel(Vector256<float> x,Vector256<float> y,Vector256<float> z, int nOctaves = 8, float persistence = 0.5f,float lacunarity = 2.0f,float scale = 10.0f)
+		{
+			var freq  = v1f;
+			var amp   = v1f;
+			var max   = Vector256<float>.Zero;
+			var total = Vector256<float>.Zero;
+			var persistenceV = LoadVectorCorrectly(persistence);
+			var lacunarityV = LoadVectorCorrectly(lacunarity);
+			var scaleV = LoadVectorCorrectly(scale);
+			for (var i = 0; i < nOctaves; ++i)
+			{
+
+				var cX = Divide(Multiply(x, freq), scaleV);
+				var cY = Divide(Multiply(y, freq), scaleV);
+				var cZ = Divide(Multiply(z, freq), scaleV);
+				var value = perlinAVX(cX,cY,cZ);
+				
+				total = Add(total,Multiply(amp,value));
+				max   = Add(max,amp);
+				freq  = Multiply(freq,lacunarityV);
+				amp   = Multiply(amp,persistenceV);
+			}
+
+			return Divide(total, max);
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		public static float PseudoPow8(float a) => a * a * a * a * a * a * a * a;
 	}
 }
