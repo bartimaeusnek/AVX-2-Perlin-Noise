@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.Intrinsics;
 using AVXPerlinNoise;
 using BenchmarkDotNet.Attributes;
@@ -7,6 +8,7 @@ using BenchmarkDotNet.Running;
 
 namespace PerlinTests
 {
+    [ExcludeFromCodeCoverage]
     [MarkdownExporterAttribute]
     public class Grad : BaseBenchmark
     {
@@ -28,7 +30,8 @@ namespace PerlinTests
             return this.retGrad;
         }
     }
-    
+
+    [ExcludeFromCodeCoverage]
     [MarkdownExporterAttribute]
     public class Lerp : BaseBenchmark
     {
@@ -44,13 +47,14 @@ namespace PerlinTests
         {
             for (int i = 0; i < 4; i++)
             {
-                this.retlerp[i] = Perlin.lerp( this._as[i], this._bs[i], this._cs[i]);
+                this.retlerp[i] = Perlin.lerp(this._as[i], this._bs[i], this._cs[i]);
             }
 
             return this.retlerp;
         }
     }
-    
+
+    [ExcludeFromCodeCoverage]
     [MarkdownExporterAttribute]
     public class Fade : BaseBenchmark
     {
@@ -66,13 +70,14 @@ namespace PerlinTests
         {
             for (int i = 0; i < 4; i++)
             {
-                this.retlerp[i] = Perlin.fade( this._as[i]);
+                this.retlerp[i] = Perlin.fade(this._as[i]);
             }
 
             return this.retlerp;
         }
     }
-    
+
+    [ExcludeFromCodeCoverage]
     [MarkdownExporterAttribute]
     public class PerlinBench : BaseBenchmark
     {
@@ -88,13 +93,14 @@ namespace PerlinTests
         {
             for (int i = 0; i < 8; i++)
             {
-                this.retlerp[i] = Perlin.perlin(this._xs[i], this._ys[i],this._zs[i]);
+                this.retlerp[i] = Perlin.perlin(this._xs[i], this._ys[i], this._zs[i]);
             }
 
             return this.retlerp;
         }
     }
-    
+
+    [ExcludeFromCodeCoverage]
     [MarkdownExporterAttribute, SimpleJob(RunStrategy.Throughput)]
     public class PerlinOctaveBench : BaseBenchmark
     {
@@ -113,15 +119,16 @@ namespace PerlinTests
         }
     }
 
-     public class Program
-     {
-         public static void Main(string[] args)
-         {
+    [ExcludeFromCodeCoverage]
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             // BenchmarkRunner.Run<Grad>();
             // BenchmarkRunner.Run<Lerp>();
             // BenchmarkRunner.Run<Fade>();
             // BenchmarkRunner.Run<PerlinBench>();
             BenchmarkRunner.Run<PerlinOctaveBench>();
-         }
-     }
+        }
+    }
 }

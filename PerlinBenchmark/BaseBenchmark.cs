@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.Intrinsics;
 using AVXPerlinNoise;
 using BenchmarkDotNet.Attributes;
 
 namespace PerlinTests
 {
+    [ExcludeFromCodeCoverage]
     public abstract class BaseBenchmark
     {
         protected int[]  _hashs;

@@ -3,6 +3,18 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>AVX2PerlinNoise</PackageId>
+        <Title>AVX2 Perlin Noise</Title>
+        <Authors>bartimaeusnek</Authors>
+        <Description>A AVX2 improved implementation of Perlin's Noise. It's faster :)
+ LGPL3 licensed.</Description>
+        <Copyright>2020 bartimaeusnek</Copyright>
+        <PackageProjectUrl>https://github.com/bartimaeusnek/AVX-2-Perlin-Noise</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/bartimaeusnek/AVX-2-Perlin-Noise/blob/master/LICENSE.md</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/bartimaeusnek/AVX-2-Perlin-Noise</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>perlin, noise, perlin-noise, avx2, lgplv3</PackageTags>
     </PropertyGroup>
 
 </Project>

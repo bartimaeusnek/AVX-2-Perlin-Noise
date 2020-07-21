@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AVXPerlinNoise
 {
@@ -33,6 +34,7 @@ namespace AVXPerlinNoise
 			78, 66, 215, 61, 156, 180
 		};
 		
+		[ExcludeFromCodeCoverage]
 		public static float OctavePerlin(float x, float y, float z, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
 		{
 			var freq  = 1.0f;
@@ -51,6 +53,7 @@ namespace AVXPerlinNoise
 			return total / max;
 		}
 		
+		[ExcludeFromCodeCoverage]
 		public static void init()
 		{
 			Console.WriteLine("Init Perlin class");
@@ -59,6 +62,7 @@ namespace AVXPerlinNoise
 		internal static readonly int[]  p; // Doubled permutation to avoid overflow
 		internal static readonly long[] pL;
 
+		[ExcludeFromCodeCoverage]
 		static Perlin()
 		{
 			p  = new int[512];
@@ -70,6 +74,7 @@ namespace AVXPerlinNoise
 			}
 		}
 
+		[ExcludeFromCodeCoverage]
 		public static int[] PerlinHash(int xi, int yi, int zi)
 		{
 			var a  = p[xi]     + yi;
@@ -81,6 +86,7 @@ namespace AVXPerlinNoise
 			return new[] {aa, ab, ba, bb};
 		}
 
+		[ExcludeFromCodeCoverage]
 		public static double perlin(double x, double y, double z)
 		{
 			int    xi = (int) x & 255; // Calculate the "unit cube" that the point asked will be located in
@@ -127,7 +133,8 @@ namespace AVXPerlinNoise
 				(lerp(y1, y2, w) + 1) /
 				2; // For convenience we bound it to 0 - 1 (theoretical min/max before is -1 - 1)
 		}
-
+		
+		[ExcludeFromCodeCoverage]
 		public static float perlin(float x, float y, float z)
 		{
 			var xi = (int) x & 255;
@@ -174,19 +181,23 @@ namespace AVXPerlinNoise
 		}
 
 
+		[ExcludeFromCodeCoverage]
 		public static double gradu(int hash, double x, double y)
 			=> hash < 8 ? x : y;
 
+		[ExcludeFromCodeCoverage]
 		public static double gradVY(int hash, double y)
 			=> hash < 4 ? y : 0;
 
+		[ExcludeFromCodeCoverage]
 		public static double gradVX(int hash, double x)
 			=> hash == 12 || hash == 14 ? x : 0;
 
+		[ExcludeFromCodeCoverage]
 		public static double gradVZ(int hash, double z)
 			=> !(hash < 4 || hash == 12 || hash == 14) ? z : 0;
 
-
+		[ExcludeFromCodeCoverage]
 		public static float grad(int hash, float x, float y, float z)
 		{
 			var h = hash & 15;
@@ -204,6 +215,7 @@ namespace AVXPerlinNoise
 			return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
 		}
 
+		[ExcludeFromCodeCoverage]
 		public static double grad(int hash, double x, double y, double z)
 		{
 			int h = hash & 15; // Take the hashed value and take the first 4 bits of it (15 == 0b1111)
@@ -231,22 +243,26 @@ namespace AVXPerlinNoise
 				); // Use the last 2 bits to decide if u and v are positive or negative.  Then return their addition.
 		}
 
+		[ExcludeFromCodeCoverage]
 		public static float lerp(float a, float b, float x)
 			=> a + x * (b - a);
 
-
+		[ExcludeFromCodeCoverage]
 		public static double lerp(double a, double b, double x)
 			=> a + x * (b - a);
 
+		[ExcludeFromCodeCoverage]
 		public static float fade(float t)
 			=> t * t * t * (t * (t * 6 - 15) + 10);
 
+		[ExcludeFromCodeCoverage]
 		public static double fade(double t)
 			// Fade function as defined by Ken Perlin.  This eases coordinate values
 			// so that they will "ease" towards integral values.  This ends up smoothing
 			// the final output.
 			=> t * t * t * (t * (t * 6 - 15) + 10); // 6t^5 - 15t^4 + 10t^3
 
+		[ExcludeFromCodeCoverage]
 		public static double gradV(int h, double x, double y, double z)
 			=> h < 4 ? y : h == 12 || h == 14 ? x : z;
 

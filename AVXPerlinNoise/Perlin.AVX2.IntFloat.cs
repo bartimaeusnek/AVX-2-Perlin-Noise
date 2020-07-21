@@ -35,7 +35,6 @@ namespace AVXPerlinNoise
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		internal static Vector256<float> MakeFloatCutVector(Vector256<float> x)
 			=> Subtract(x, ConvertToVector256Single(ConvertToVector256Int32WithTruncation(x)));
-
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static Vector256<float> perlinAVX(Vector256<float> x, Vector256<float> y, Vector256<float> z)
@@ -214,27 +213,34 @@ namespace AVXPerlinNoise
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static float OctavePerlinAVX(float x, float y, float z, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
 		{
+			if (nOctaves % 8 != 0)
+				throw new ArgumentException($"{nameof(nOctaves)} has to be divide able by 8!");
+			
 			var freq  = 1.0f;
 			var amp   = 1.0f;
 			var max   = 0.0f;
 			var total = 0.0f;
-			int i = 0;
-			do
-			{
-				
+			var i = 0;
+			
+			while(true) {
 				var valueVector = perlinAVX(
 				                            LoadVectorWithModScale(x, lacunarity, freq, scale),
-				                            LoadVectorWithModScale(y, lacunarity,freq, scale),
-				                            LoadVectorWithModScale(z, lacunarity,freq, scale)
-				                            );
-				var ampVector = LoadVectorWithMod(amp, persistence);
-				var totalVector = Multiply(ampVector, valueVector);
-				
-				max += SumVector(ampVector);
-				total += SumVector(totalVector);
-				i += 8;
-			} while (i < nOctaves);
+				                            LoadVectorWithModScale(y, lacunarity, freq, scale),
+				                            LoadVectorWithModScale(z, lacunarity, freq, scale)
+				                           );
 
+				var ampVector   = LoadVectorWithMod(amp, persistence);
+				var totalVector = Multiply(ampVector, valueVector);
+
+				max   += SumVector(ampVector);
+				total += SumVector(totalVector);
+				i     += 8;
+				if (i >= nOctaves)
+					break;
+				amp  *= (float) Math.Pow(persistence, 8);
+				freq *= (float) Math.Pow(lacunarity, 8);
+			}
+			
 			return total / max;
 		}
 	}
