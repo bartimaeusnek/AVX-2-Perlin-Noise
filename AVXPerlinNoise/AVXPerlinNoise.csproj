@@ -11,7 +11,7 @@
  LGPL3 licensed.</Description>
         <Copyright>2020 bartimaeusnek</Copyright>
         <PackageProjectUrl>https://github.com/bartimaeusnek/AVX-2-Perlin-Noise</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/bartimaeusnek/AVX-2-Perlin-Noise/blob/master/LICENSE.md</PackageLicenseUrl>
+        <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/bartimaeusnek/AVX-2-Perlin-Noise</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>perlin, noise, perlin-noise, avx2, lgplv3</PackageTags>

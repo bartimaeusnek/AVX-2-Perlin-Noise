@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+ * Based off this implementation of the Perlin Noise, smaller Changes made to it, i.e. extracted some parts
+ * or added some minor instructions.
+ *
+ * All credit for this file goes to:
+ * https://gist.github.com/Flafla2/1a0b9ebef678bbce3215
+ */
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace AVXPerlinNoise
