@@ -1,10 +1,13 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using AVXPerlinNoise;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 
 namespace PerlinTests
@@ -97,54 +100,98 @@ namespace PerlinTests
         }
     }
 
-    [ExcludeFromCodeCoverage,MarkdownExporterAttribute,SimpleJob(RunStrategy.Throughput)]
+    [
+        ExcludeFromCodeCoverage,
+        MarkdownExporterAttribute,
+        SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true), 
+        //SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp50)
+    ]
     public class PerlinOctaveBench : BaseBenchmark
     {
-        [Benchmark]
-        public float[] AVX2Parallel()
-        {
-            var results = Perlin.OctavePerlinAVX(this.xV, this.yV, this.zV);
-            return results;
-        }
+        [Params(1, 2, 3, 4, 5, 6, 7, 8)]
+        public int nOctaves;
         
         [Benchmark]
-        public float[] AVX2()
+        public float AVX2Dynamic()
         {
-            float[] results = new float[8];
-            for (int i = 0; i < 8; i++)
-            {
-                results[i] = Perlin.OctavePerlinAVX(this._xs[0], this._ys[0], this._zs[0]);
-            }
+            float results;
+            results = Perlin.OctavePerlinAVXDynamic(this._xs[0], this._ys[0], this._zs[0], nOctaves: nOctaves);
             return results;
-        }
-
-        [Benchmark(Baseline = true)]
-        public float[] Regular()
-        {
-            float[] results = new float[8];
-            for (int i = 0; i < 8; i++)
-            {
-                results[i] = Perlin.OctavePerlin(this._xs[0], this._ys[0], this._zs[0]);
-            }
-            return results;
-        }
-    }
-    
-    [ExcludeFromCodeCoverage,MarkdownExporterAttribute,SimpleJob(RunStrategy.Throughput)]
-    public class PerlinOctaveBenchx32 : BaseBenchmark
-    {
-        [Benchmark]
-        public float AVX2()
-        {
-            var result = Perlin.OctavePerlinAVX(this._xs[0], this._ys[0], this._zs[0], 32);
-            return result;
         }
 
         [Benchmark(Baseline = true)]
         public float Regular()
         {
-            var result = Perlin.OctavePerlin(this._xs[0], this._ys[0], this._zs[0], 32);
-            return result;
+            float results;
+            results = Perlin.OctavePerlin(this._xs[0], this._ys[0], this._zs[0], nOctaves);
+            return results;
+        }
+    }
+    
+    [
+        ExcludeFromCodeCoverage,
+        MarkdownExporterAttribute,
+        SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true), 
+        //SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp50)
+    ]
+    public class PerlinOctaveBenchDoublePrecision : BaseBenchmark
+    {
+        [Params( 1, 2, 3, 4, 5, 6, 7, 8)]
+        public int nOctaves;
+        
+        [Benchmark]
+        public double AVX2DynamicDoublePrecision()
+        {
+            double results;
+            results = Perlin.OctavePerlinAVXDynamic(this._xsd[0], this._ysd[0], this._zsd[0], nOctaves);
+            return results;
+        }
+        
+        [Benchmark]
+        public double AVX2DynamicDoublePrecisionBlend()
+        {
+            double results;
+            results = Perlin.OctavePerlinAVXDynamicBlend(this._xsd[0], this._ysd[0], this._zsd[0], nOctaves);
+            return results;
+        }
+
+        [Benchmark(Baseline = true)]
+        public double RegularDoublePrecision()
+        {
+            double results;
+            results = Perlin.OctavePerlin(this._xsd[0], this._ysd[0], this._zsd[0], nOctaves);
+            return results;
+        }
+    }
+    
+    public class PerlinOctaveBenchSse : BaseBenchmark
+    {
+        [Params(1, 2, 3, 4, 5, 6, 7, 8)]
+        public int nOctaves;
+        
+        [Benchmark]
+        public float Sse()
+        {
+            float results;
+            results = Perlin.OctavePerlinSseDynamic(this._as[0], this._bs[0], this._cs[0], nOctaves);
+            return results;
+        }
+        
+        [Benchmark]
+        public float SseBlend()
+        {
+            float results;
+            results = Perlin.OctavePerlinSseDynamicBlend(this._as[0], this._bs[0], this._cs[0], nOctaves);
+            return results;
+        }
+        
+        
+        [Benchmark(Baseline = true)]
+        public float RegularDoublePrecision()
+        {
+            float results;
+            results = Perlin.OctavePerlin(this._as[0], this._bs[0], this._cs[0], nOctaves);
+            return results;
         }
     }
 
@@ -158,7 +205,7 @@ namespace PerlinTests
             // BenchmarkRunner.Run<Fade>();
             // BenchmarkRunner.Run<PerlinBench>();
             BenchmarkRunner.Run<PerlinOctaveBench>();
-            //BenchmarkRunner.Run<PerlinOctaveBenchx32>();
+            // BenchmarkRunner.Run<PerlinOctaveBenchDoublePrecision>();
         }
     }
 }

@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>AVX2PerlinNoise</PackageId>
@@ -15,6 +14,9 @@
         <RepositoryUrl>https://github.com/bartimaeusnek/AVX-2-Perlin-Noise</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>perlin, noise, perlin-noise, avx2, lgplv3</PackageTags>
+        <PackageVersion>1.1.0</PackageVersion>
+        <AssemblyVersion>1.1.0</AssemblyVersion>
+        <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
     </PropertyGroup>
 
 </Project>

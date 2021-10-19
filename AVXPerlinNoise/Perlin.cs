@@ -8,6 +8,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Intrinsics.X86;
 
 namespace AVXPerlinNoise
 {
@@ -62,6 +63,25 @@ namespace AVXPerlinNoise
 		}
 		
 		[ExcludeFromCodeCoverage]
+		public static double OctavePerlin(double x, double y, double z, int nOctaves = 8, double persistence = 0.5d, double lacunarity = 2.0d, double scale = 10.0d)
+		{
+			var freq  = 1.0d;
+			var amp   = 1.0d;
+			var max   = 0.0d;
+			var total = 0.0d;
+			for (int i = 0; i < nOctaves; ++i)
+			{
+				var value = perlin(x * freq / scale, y * freq / scale, z * freq / scale);
+				total += amp * value;
+				max   += amp;
+				freq  *= lacunarity;
+				amp   *= persistence;
+			}
+
+			return total / max;
+		}
+		
+		[ExcludeFromCodeCoverage]
 		public static void init()
 		{
 			Console.WriteLine("Init Perlin class");
@@ -97,12 +117,12 @@ namespace AVXPerlinNoise
 		[ExcludeFromCodeCoverage]
 		public static double perlin(double x, double y, double z)
 		{
-			int    xi = (int) x & 255; // Calculate the "unit cube" that the point asked will be located in
-			int    yi = (int) y & 255; // The left bound is ( |_x_|,|_y_|,|_z_| ) and the right bound is that
-			int    zi = (int) z & 255; // plus 1.  Next we calculate the location (from 0.0 to 1.0) in that cube.
-			double xf = x - (int) x;   // We also fade the location to smooth the result.
-			double yf = y - (int) y;
-			double zf = z - (int) z;
+			int    xi = (int) Math.Floor(x) & 255; // Calculate the "unit cube" that the point asked will be located in
+			int    yi = (int) Math.Floor(y) & 255;       // The left bound is ( |_x_|,|_y_|,|_z_| ) and the right bound is that
+			int    zi = (int) Math.Floor(z) & 255;       // plus 1.  Next we calculate the location (from 0.0 to 1.0) in that cube.
+			double xf = x - Math.Floor(x);         // We also fade the location to smooth the result.
+			double yf = y - Math.Floor(y);
+			double zf = z - Math.Floor(z);
 			double u  = fade(xf);
 			double v  = fade(yf);
 			double w  = fade(zf);
@@ -137,20 +157,18 @@ namespace AVXPerlinNoise
 			          u);
 			y2 = lerp(x1, x2, v);
 
-			return
-				(lerp(y1, y2, w) + 1) /
-				2; // For convenience we bound it to 0 - 1 (theoretical min/max before is -1 - 1)
+			return (lerp(y1, y2, w) + 1) / 2; // For convenience we bound it to 0 - 1 (theoretical min/max before is -1 - 1)
 		}
 		
 		[ExcludeFromCodeCoverage]
 		public static float perlin(float x, float y, float z)
 		{
-			var xi = (int) x & 255;
-			var yi = (int) y & 255;
-			var zi = (int) z & 255;
-			var xf = x - (int) x;
-			var yf = y - (int) y;
-			var zf = z - (int) z;
+			var xi = (int) Math.Floor(x) & 255;
+			var yi = (int) Math.Floor(y) & 255;
+			var zi = (int) Math.Floor(z) & 255;
+			var xf = x - (int) Math.Floor(x);
+			var yf = y - (int) Math.Floor(y);
+			var zf = z - (int) Math.Floor(z);
 			var u  = fade(xf);
 			var v  = fade(yf);
 			var w  = fade(zf);
@@ -274,5 +292,18 @@ namespace AVXPerlinNoise
 		public static double gradV(int h, double x, double y, double z)
 			=> h < 4 ? y : h == 12 || h == 14 ? x : z;
 
+		[ExcludeFromCodeCoverage]
+		public static float OptimizedOctavePerlin(float x,                  float y, float z, int nOctaves = 1,
+		                                    float persistence = 0.5f, float lacunarity = 2.0f,
+		                                    float scale       = 10.0f)
+		{
+			if (!Avx2.IsSupported || nOctaves < 6)
+			{
+				return OctavePerlin(x, y, z, nOctaves, persistence, lacunarity, scale);
+			}
+			
+			return OctavePerlinAVXDynamic(x, y, z, nOctaves, persistence, lacunarity, scale);
+		}
+		
 	}
 }
