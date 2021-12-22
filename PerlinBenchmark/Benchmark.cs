@@ -163,36 +163,36 @@ namespace PerlinTests
         }
     }
     
-    public class PerlinOctaveBenchSse : BaseBenchmark
-    {
-        [Params(1, 2, 3, 4, 5, 6, 7, 8)]
-        public int nOctaves;
-        
-        [Benchmark]
-        public float Sse()
-        {
-            float results;
-            results = Perlin.OctavePerlinSseDynamic(_as[0], _bs[0], _cs[0], nOctaves);
-            return results;
-        }
-        
-        [Benchmark]
-        public float SseBlend()
-        {
-            float results;
-            results = Perlin.OctavePerlinSseDynamicBlend(_as[0], _bs[0], _cs[0], nOctaves);
-            return results;
-        }
-        
-        
-        [Benchmark(Baseline = true)]
-        public float RegularDoublePrecision()
-        {
-            float results;
-            results = Perlin.OctavePerlin(_as[0], _bs[0], _cs[0], nOctaves);
-            return results;
-        }
-    }
+    //public class PerlinOctaveBenchSse : BaseBenchmark
+    //{
+    //    [Params(1, 2, 3, 4, 5, 6, 7, 8)]
+    //    public int nOctaves;
+    //    
+    //    [Benchmark]
+    //    public float Sse()
+    //    {
+    //        float results;
+    //        results = Perlin.OctavePerlinSseDynamic(_as[0], _bs[0], _cs[0], nOctaves);
+    //        return results;
+    //    }
+    //    
+    //    [Benchmark]
+    //    public float SseBlend()
+    //    {
+    //        float results;
+    //        results = Perlin.OctavePerlinSseDynamicBlend(_as[0], _bs[0], _cs[0], nOctaves);
+    //        return results;
+    //    }
+    //    
+    //    
+    //    [Benchmark(Baseline = true)]
+    //    public float RegularDoublePrecision()
+    //    {
+    //        float results;
+    //        results = Perlin.OctavePerlin(_as[0], _bs[0], _cs[0], nOctaves);
+    //        return results;
+    //    }
+    //}
 
     [ExcludeFromCodeCoverage]
     public class Program
