@@ -75,47 +75,47 @@ namespace PerlinTests
                   {
                       3d, 7d, 4d, 3d, 1d, 6d, 5d, 5d
                   };
-            _hashsAnd15 = this._hashs.Select(x => x & 15).ToArray();
+            _hashsAnd15 = _hashs.Select(x => x & 15).ToArray();
 
-            hashsV = VectorUtils.Create(this._hashs);
-            yV     = VectorUtils.Create(this._ys);
-            xV     = VectorUtils.Create(this._xs);
-            zV     = VectorUtils.Create(this._zs);
+            hashsV = VectorUtils.Create(_hashs);
+            yV     = VectorUtils.Create(_ys);
+            xV     = VectorUtils.Create(_xs);
+            zV     = VectorUtils.Create(_zs);
 
-            this._as = new []
+            _as = new []
                        {
                            2f, 3f, 5f, 7f, 2f, 3f, 5f, 7f
                        };
 
-            this._bs = new []
+            _bs = new []
                        {
                            3f, 5f, 7f, 2f, 3f, 5f, 7f, 2f
                        };
-            this._cs = new []
+            _cs = new []
                        {
                            5f, 7f, 2f, 3f, 5f, 7f, 2f, 3f
                        };
-            aV = VectorUtils.Create(this._as);
-            bV = VectorUtils.Create(this._bs);
-            cV = VectorUtils.Create(this._cs);
+            aV = VectorUtils.Create(_as);
+            bV = VectorUtils.Create(_bs);
+            cV = VectorUtils.Create(_cs);
 
-            this._asd = new []
+            _asd = new []
                        {
                            2d, 3d, 5d, 7d
                        };
 
-            this._bsd = new []
+            _bsd = new []
                        {
                            3d, 5d, 7d, 2d
                        };
-            this._csd = new []
+            _csd = new []
                        {
                            5d, 7d, 2d, 3d
                        };
             
-            aVd = VectorUtils.Create(this._asd);
-            bVd = VectorUtils.Create(this._bsd);
-            cVd = VectorUtils.Create(this._csd);
+            aVd = VectorUtils.Create(_asd);
+            bVd = VectorUtils.Create(_bsd);
+            cVd = VectorUtils.Create(_csd);
             
             Perlin.init();
         }

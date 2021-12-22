@@ -12,7 +12,8 @@ using BenchmarkDotNet.Running;
 
 namespace PerlinTests
 {
-    [ExcludeFromCodeCoverage,MarkdownExporterAttribute]
+    [ExcludeFromCodeCoverage]
+    [MarkdownExporterAttribute]
     public class Grad : BaseBenchmark
     {
         [Benchmark]
@@ -27,14 +28,14 @@ namespace PerlinTests
         {
             for (int i = 0; i < 8; i++)
             {
-                this.retGrad[i] = (int) Perlin.grad(this._hashs[i], this._xs[i], this._ys[i], this._zs[i]);
+                retGrad[i] = (int) Perlin.grad(_hashs[i], _xs[i], _ys[i], _zs[i]);
             }
 
-            return this.retGrad;
+            return retGrad;
         }
     }
 
-    [ExcludeFromCodeCoverage,MarkdownExporterAttribute]
+    [ExcludeFromCodeCoverage][MarkdownExporterAttribute]
     public class Lerp : BaseBenchmark
     {
         [Benchmark]
@@ -49,14 +50,15 @@ namespace PerlinTests
         {
             for (int i = 0; i < 4; i++)
             {
-                this.retlerp[i] = Perlin.lerp(this._as[i], this._bs[i], this._cs[i]);
+                retlerp[i] = Perlin.lerp(_as[i], _bs[i], _cs[i]);
             }
 
-            return this.retlerp;
+            return retlerp;
         }
     }
 
-    [ExcludeFromCodeCoverage,MarkdownExporterAttribute]
+    [ExcludeFromCodeCoverage]
+    [MarkdownExporterAttribute]
     public class Fade : BaseBenchmark
     {
         [Benchmark]
@@ -71,20 +73,21 @@ namespace PerlinTests
         {
             for (int i = 0; i < 4; i++)
             {
-                this.retlerp[i] = Perlin.fade(this._as[i]);
+                retlerp[i] = Perlin.fade(_as[i]);
             }
 
-            return this.retlerp;
+            return retlerp;
         }
     }
 
-    [ExcludeFromCodeCoverage,MarkdownExporterAttribute]
+    [ExcludeFromCodeCoverage]
+    [MarkdownExporterAttribute]
     public class PerlinBench : BaseBenchmark
     {
         [Benchmark]
         public Vector256<float> AVX2()
         {
-            var result = Perlin.perlinAVX(this.xV, this.yV, this.zV);
+            var result = Perlin.perlinAVX(xV, yV, zV);
             return result;
         }
 
@@ -93,29 +96,28 @@ namespace PerlinTests
         {
             for (int i = 0; i < 8; i++)
             {
-                this.retlerp[i] = Perlin.perlin(this._xs[i], this._ys[i], this._zs[i]);
+                retlerp[i] = Perlin.perlin(_xs[i], _ys[i], _zs[i]);
             }
 
-            return this.retlerp;
+            return retlerp;
         }
     }
 
-    [
-        ExcludeFromCodeCoverage,
-        MarkdownExporterAttribute,
-        SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true), 
-        //SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp50)
-    ]
+    [ExcludeFromCodeCoverage]
+    [MarkdownExporterAttribute]
+    //[SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true)]
+    //[SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net50)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net60)]
     public class PerlinOctaveBench : BaseBenchmark
     {
-        [Params(1, 2, 3, 4, 5, 6, 7, 8)]
+        [Params(/*1, 2, 3, 4, 5, 6, 7,*/ 8)]
         public int nOctaves;
         
         [Benchmark]
         public float AVX2Dynamic()
         {
             float results;
-            results = Perlin.OctavePerlinAVXDynamic(this._xs[0], this._ys[0], this._zs[0], nOctaves: nOctaves);
+            results = Perlin.OctavePerlinAVXDynamic(_xs[0], _ys[0], _zs[0], nOctaves: nOctaves);
             return results;
         }
 
@@ -123,27 +125,24 @@ namespace PerlinTests
         public float Regular()
         {
             float results;
-            results = Perlin.OctavePerlin(this._xs[0], this._ys[0], this._zs[0], nOctaves);
+            results = Perlin.OctavePerlin(_xs[0], _ys[0], _zs[0], nOctaves);
             return results;
         }
     }
     
-    [
-        ExcludeFromCodeCoverage,
-        MarkdownExporterAttribute,
-        SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true), 
-        //SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp50)
-    ]
+    [ExcludeFromCodeCoverage]
+    [MarkdownExporterAttribute]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true)]
     public class PerlinOctaveBenchDoublePrecision : BaseBenchmark
     {
-        [Params( 1, 2, 3, 4, 5, 6, 7, 8)]
+        [Params(1, 2, 3, 4, 5, 6, 7, 8)]
         public int nOctaves;
         
         [Benchmark]
         public double AVX2DynamicDoublePrecision()
         {
             double results;
-            results = Perlin.OctavePerlinAVXDynamic(this._xsd[0], this._ysd[0], this._zsd[0], nOctaves);
+            results = Perlin.OctavePerlinAVXDynamic(_xsd[0], _ysd[0], _zsd[0], nOctaves);
             return results;
         }
         
@@ -151,7 +150,7 @@ namespace PerlinTests
         public double AVX2DynamicDoublePrecisionBlend()
         {
             double results;
-            results = Perlin.OctavePerlinAVXDynamicBlend(this._xsd[0], this._ysd[0], this._zsd[0], nOctaves);
+            results = Perlin.OctavePerlinAVXDynamicBlend(_xsd[0], _ysd[0], _zsd[0], nOctaves);
             return results;
         }
 
@@ -159,7 +158,7 @@ namespace PerlinTests
         public double RegularDoublePrecision()
         {
             double results;
-            results = Perlin.OctavePerlin(this._xsd[0], this._ysd[0], this._zsd[0], nOctaves);
+            results = Perlin.OctavePerlin(_xsd[0], _ysd[0], _zsd[0], nOctaves);
             return results;
         }
     }
@@ -173,7 +172,7 @@ namespace PerlinTests
         public float Sse()
         {
             float results;
-            results = Perlin.OctavePerlinSseDynamic(this._as[0], this._bs[0], this._cs[0], nOctaves);
+            results = Perlin.OctavePerlinSseDynamic(_as[0], _bs[0], _cs[0], nOctaves);
             return results;
         }
         
@@ -181,7 +180,7 @@ namespace PerlinTests
         public float SseBlend()
         {
             float results;
-            results = Perlin.OctavePerlinSseDynamicBlend(this._as[0], this._bs[0], this._cs[0], nOctaves);
+            results = Perlin.OctavePerlinSseDynamicBlend(_as[0], _bs[0], _cs[0], nOctaves);
             return results;
         }
         
@@ -190,7 +189,7 @@ namespace PerlinTests
         public float RegularDoublePrecision()
         {
             float results;
-            results = Perlin.OctavePerlin(this._as[0], this._bs[0], this._cs[0], nOctaves);
+            results = Perlin.OctavePerlin(_as[0], _bs[0], _cs[0], nOctaves);
             return results;
         }
     }

@@ -263,7 +263,7 @@ namespace AVXPerlinNoise
 			return *total / *max;
 		}
 
-			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static unsafe float OctavePerlinAVXDynamicBlend(float x,                  float y, float z, int nOctaves = 1,
 		                                                  float persistence = 0.5f, float lacunarity = 2.0f,
 		                                                  float scale       = 10.0f)
@@ -341,15 +341,15 @@ namespace AVXPerlinNoise
 			return *total / *max;
 		}
 		
-		[Obsolete("use OctavePerlinAVXDynamic instead!"), MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		[Obsolete("use OctavePerlinAVXDynamic instead!")][MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static unsafe float OctavePerlinAVX(float x, float y, float z, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
 		{
 			if (nOctaves % 8 != 0)
 				throw new ArgumentException($"{nameof(nOctaves)} has to be divide able by 8!");
 
-			var freq = stackalloc float[1]{1f};
-			var amp = stackalloc float[1]{1f};
-			var i = stackalloc int[1]{1};
+			var freq  = stackalloc float[1]{1f};
+			var amp   = stackalloc float[1]{1f};
+			var i     = stackalloc int[1]{1};
 			var max   = stackalloc float[1]{0.0f};
 			var total = stackalloc float[1]{0.0f};
 			

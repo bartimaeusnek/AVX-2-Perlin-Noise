@@ -8,7 +8,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PerlinTests
 {
-    [TestClass, ExcludeFromCodeCoverage]
+    [TestClass]
+    [ExcludeFromCodeCoverage]
     public partial class PerlinTests
     {
         private int[] _hashs;
@@ -56,34 +57,32 @@ namespace PerlinTests
                     {
                         0.6F, 1.4F, 0.8F, 0.6F
                     };
-            _hashsAnd15  = this._hashs.Select(x => x & 15).ToArray();
-            _hashsL      = this._hashs.Select(x => x).ToArray();
-            _hashsAnd15L = this._hashsAnd15.Select(x => x).ToArray();
-
-
+            _hashsAnd15  = _hashs.Select(x => x & 15).ToArray();
+            _hashsL      = _hashs.Select(x => x).ToArray();
+            _hashsAnd15L = _hashsAnd15.Select(x => x).ToArray();
         }
 
         [TestMethod]
         public void TestFade()
         {
-            var xV     = VectorUtils.Create(this._xsD);
+            var xV     = VectorUtils.Create(_xsD);
             var result = Perlin.fadeAVX(xV);
             for (var i = 0; i < 8; i++)
             {
-                Assert.AreEqual(Perlin.fade(this._xsD[i]), result.GetElement(i));
+                Assert.AreEqual(Perlin.fade(_xsD[i]), result.GetElement(i));
             }
         }
 
         [TestMethod]
         public void TestLerp()
         {
-            var xV     = VectorUtils.Create(this._xsD);
-            var yV     = VectorUtils.Create(this._ysD);
-            var zV     = VectorUtils.Create(this._zsD);
+            var xV     = VectorUtils.Create(_xsD);
+            var yV     = VectorUtils.Create(_ysD);
+            var zV     = VectorUtils.Create(_zsD);
             var result = Perlin.lerpAVX(xV, yV, zV);
             for (int i = 0; i < 8; i++)
             {
-                var lerp = Perlin.lerp(this._xsD[i], this._ysD[i], this._zsD[i]);
+                var lerp = Perlin.lerp(_xsD[i], _ysD[i], _zsD[i]);
                 Assert.AreEqual(lerp, result.GetElement(i));
             }
         }
@@ -92,14 +91,14 @@ namespace PerlinTests
         [TestMethod]
         public void TestGradV()
         {
-            var hashsV = VectorUtils.Create(this._hashsAnd15L);
-            var yV     = VectorUtils.Create(this._ysD);
-            var xV     = VectorUtils.Create(this._xsD);
-            var zV     = VectorUtils.Create(this._zsD);
+            var hashsV = VectorUtils.Create(_hashsAnd15L);
+            var yV     = VectorUtils.Create(_ysD);
+            var xV     = VectorUtils.Create(_xsD);
+            var zV     = VectorUtils.Create(_zsD);
             var result = Perlin.gradAVXVVector(hashsV, xV, yV, zV);
-            for (var i = 0; i < this._hashsAnd15L.Length; i++)
+            for (var i = 0; i < _hashsAnd15L.Length; i++)
             {
-                Assert.AreEqual(Perlin.gradV(this._hashsAnd15[i], this._xsD[i], this._ysD[i], this._zsD[i]),
+                Assert.AreEqual(Perlin.gradV(_hashsAnd15[i], _xsD[i], _ysD[i], _zsD[i]),
                                 result.GetElement(i));
             }
         }
@@ -107,28 +106,28 @@ namespace PerlinTests
         [TestMethod]
         public void TestGradU()
         {
-            var hashsV = VectorUtils.Create(this._hashsL);
-            var xV     = VectorUtils.Create(this._xsD);
-            var yV     = VectorUtils.Create(this._ysD);
+            var hashsV = VectorUtils.Create(_hashsL);
+            var xV     = VectorUtils.Create(_xsD);
+            var yV     = VectorUtils.Create(_ysD);
 
             var result = Perlin.gradAVXUVector(hashsV, xV, yV);
-            for (var i = 0; i < this._hashsL.Length; i++)
+            for (var i = 0; i < _hashsL.Length; i++)
             {
-                Assert.AreEqual(Perlin.gradu(this._hashs[i], this._xsD[i], this._ysD[i]), result.GetElement(i));
+                Assert.AreEqual(Perlin.gradu(_hashs[i], _xsD[i], _ysD[i]), result.GetElement(i));
             }
         }
 
         [TestMethod]
         public void TestGrad()
         {
-            var hashsV = VectorUtils.Create(this._hashsL);
-            var yV     = VectorUtils.Create(this._ysD);
-            var xV     = VectorUtils.Create(this._xsD);
-            var zV     = VectorUtils.Create(this._zsD);
+            var hashsV = VectorUtils.Create(_hashsL);
+            var yV     = VectorUtils.Create(_ysD);
+            var xV     = VectorUtils.Create(_xsD);
+            var zV     = VectorUtils.Create(_zsD);
             var result = Perlin.gradAVX(hashsV, xV, yV, zV);
-            for (var i = 0; i < this._hashsL.Length; i++)
+            for (var i = 0; i < _hashsL.Length; i++)
             {
-                Assert.AreEqual(Perlin.grad(this._hashs[i], this._xsD[i], this._ysD[i], this._zsD[i]),
+                Assert.AreEqual(Perlin.grad(_hashs[i], _xsD[i], _ysD[i], _zsD[i]),
                                 result.GetElement(i));
             }
         }
@@ -136,31 +135,31 @@ namespace PerlinTests
         [TestMethod]
         public void TestBitCut()
         {
-            var xV     = VectorUtils.Create(this._ysD);
+            var xV     = VectorUtils.Create(_ysD);
             var result = Perlin.MakeBitCutVector(xV);
-            for (var i = 0; i < this._hashsL.Length; i++)
+            for (var i = 0; i < _hashsL.Length; i++)
             {
-                Assert.AreEqual((int) this._ysD[i] % 255, result.GetElement(i));
+                Assert.AreEqual((int) _ysD[i] % 255, result.GetElement(i));
             }
         }
 
         [TestMethod]
         public void TestFloatCut()
         {
-            var xV     = VectorUtils.Create(this._ysD);
+            var xV     = VectorUtils.Create(_ysD);
             var result = Perlin.MakeFloatCutVector(xV);
-            for (var i = 0; i < this._hashsL.Length; i++)
+            for (var i = 0; i < _hashsL.Length; i++)
             {
-                Assert.AreEqual(this._ysD[i] - (int) this._ysD[i], result.GetElement(i));
+                Assert.AreEqual(_ysD[i] - (int) _ysD[i], result.GetElement(i));
             }
         }
 
         [TestMethod]
         public void TestHash1()
         {
-            var x = VectorUtils.Create(this._xsD);
-            var y = VectorUtils.Create(this._ysD);
-            var z = VectorUtils.Create(this._zsD);
+            var x = VectorUtils.Create(_xsD);
+            var y = VectorUtils.Create(_ysD);
+            var z = VectorUtils.Create(_zsD);
 
             var xi = Perlin.MakeBitCutVector(x);
             var yi = Perlin.MakeBitCutVector(y);
@@ -225,12 +224,12 @@ namespace PerlinTests
 
             for (var i = 0; i < 8; i++)
             {
-                var   xiSingle = (int) this._xsD[i] & 255;
-                var   yiSingle = (int) this._ysD[i] & 255;
-                var   ziSingle = (int) this._zsD[i] & 255;
-                float xfSingle = this._xsD[i] - (int) this._xsD[i];
-                float yfSingle = this._ysD[i] - (int) this._ysD[i];
-                float zfSingle = this._zsD[i] - (int) this._zsD[i];
+                var   xiSingle = (int) _xsD[i] & 255;
+                var   yiSingle = (int) _ysD[i] & 255;
+                var   ziSingle = (int) _zsD[i] & 255;
+                float xfSingle = _xsD[i] - (int) _xsD[i];
+                float yfSingle = _ysD[i] - (int) _ysD[i];
+                float zfSingle = _zsD[i] - (int) _zsD[i];
                 float uSingle  = Perlin.fade(xfSingle);
                 float vSingle  = Perlin.fade(yfSingle);
                 float wSingle  = Perlin.fade(zfSingle);
@@ -282,15 +281,15 @@ namespace PerlinTests
         [TestMethod]
         public void TestUnpack()
         {
-            var xV     = VectorUtils.Create(this._xsD);
-            var yV     = VectorUtils.Create(this._ysD);
+            var xV     = VectorUtils.Create(_xsD);
+            var yV     = VectorUtils.Create(_ysD);
             var xiV    = Perlin.MakeBitCutVector(xV);
             var yiV    = Perlin.MakeBitCutVector(yV);
             var result = Perlin.UnpackPermutationArrayAndAdd(xiV, yiV);
             for (var i = 0; i < 8; i++)
             {
-                var xi = (int) this._xsD[i] & 255;
-                var yi = (int) this._ysD[i] & 255;
+                var xi = (int) _xsD[i] & 255;
+                var yi = (int) _ysD[i] & 255;
                 var a  = Perlin.p[xi] + yi;
                 Assert.AreEqual(a, result.GetElement(i));
             }
@@ -299,13 +298,13 @@ namespace PerlinTests
         [TestMethod]
         public void TestPerlin()
         {
-            var yV     = VectorUtils.Create(this._ysD);
-            var xV     = VectorUtils.Create(this._xsD);
-            var zV     = VectorUtils.Create(this._zsD);
+            var yV     = VectorUtils.Create(_ysD);
+            var xV     = VectorUtils.Create(_xsD);
+            var zV     = VectorUtils.Create(_zsD);
             var result = Perlin.perlinAVX(xV, yV, zV);
             for (var i = 0; i < 8; i++)
             {
-                var prl = Perlin.perlin(this._xsD[i], this._ysD[i], this._zsD[i]);
+                var prl = Perlin.perlin(_xsD[i], _ysD[i], _zsD[i]);
                 Assert.AreEqual(prl, result.GetElement(i));
             }
         }
@@ -313,9 +312,9 @@ namespace PerlinTests
         [TestMethod]
         public void TestOctaves()
         {
-            var yV     = this._ysD[1];
-            var xV     = this._xsD[1];
-            var zV     = this._zsD[1];
+            var yV     = _ysD[1];
+            var xV     = _xsD[1];
+            var zV     = _zsD[1];
             var result = Perlin.OctavePerlinAVX(xV, yV, zV);
             var prl    = Perlin.OctavePerlin(xV, yV, zV);
             Assert.AreEqual(prl, result);
@@ -348,14 +347,14 @@ namespace PerlinTests
         [TestMethod]
         public void TestOctavesParallel()
         {
-            var yV             = VectorUtils.Create(this._ysD);
-            var xV             = VectorUtils.Create(this._xsD);
-            var zV             = VectorUtils.Create(this._zsD);
+            var yV             = VectorUtils.Create(_ysD);
+            var xV             = VectorUtils.Create(_xsD);
+            var zV             = VectorUtils.Create(_zsD);
             var result         = Perlin.OctavePerlinAVX(xV, yV, zV);
             var resultParallel = Perlin.OctavePerlinAVXParallel(xV, yV, zV);
             for (int i = 0; i < 8; i++)
             {
-                var prl = Perlin.OctavePerlin(this._xsD[i], this._ysD[i], this._zsD[i]);
+                var prl = Perlin.OctavePerlin(_xsD[i], _ysD[i], _zsD[i]);
                 Assert.AreEqual(prl, result[i]);
                 Assert.AreEqual(prl, resultParallel.GetElement(i));
             }
@@ -370,21 +369,6 @@ namespace PerlinTests
                         for (int octaves = 1; octaves < 9; octaves++)
                         {
                             var result = Perlin.OctavePerlinAVXDynamic(xV, yV, zV, octaves);
-                            var prl    = Perlin.OctavePerlin(xV, yV, zV, octaves);
-                            Assert.AreEqual(prl, result, 0.000001,
-                                            $"xV = {xV}, yV = {yV}, zV = {zV}, Octaves = {octaves}");
-                        }
-        }
-
-        [TestMethod]
-        public void TestOctavesDynamicSse()
-        {
-            for (float xV = -10f; xV < 10f; xV += 0.1f)
-                for (float yV = -10f; yV < 10f; yV += 0.1f)
-                    for (float zV = -10f; zV < 10f; zV += 0.1f)
-                        for (int octaves = 1; octaves < 9; octaves++)
-                        {
-                            var result = Perlin.OctavePerlinSseDynamic(xV, yV, zV, octaves);
                             var prl    = Perlin.OctavePerlin(xV, yV, zV, octaves);
                             Assert.AreEqual(prl, result, 0.000001,
                                             $"xV = {xV}, yV = {yV}, zV = {zV}, Octaves = {octaves}");
@@ -408,7 +392,7 @@ namespace PerlinTests
                         Assert.AreEqual(
                                         prl, result.GetElement(0), 0.000001,
                                         $"xV = {xV}, yV = {yV}, zV = {zV}"
-                                        );
+                                       );
                         
                         for (int octaves = 1; octaves < 24; octaves++)
                         {
@@ -419,7 +403,7 @@ namespace PerlinTests
                             Assert.AreEqual(
                                             prl, result2, 0.000001,
                                             $"xV = {xV}, yV = {yV}, zV = {zV}, Octaves = {octaves}"
-                                            );
+                                           );
                             
                         }
                     }

@@ -16,7 +16,7 @@
         <PackageTags>perlin, noise, perlin-noise, avx2, lgplv3</PackageTags>
         <PackageVersion>1.1.0</PackageVersion>
         <AssemblyVersion>1.1.0</AssemblyVersion>
-        <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks>net5.0;net6.0;netcoreapp3.1</TargetFrameworks>
     </PropertyGroup>
 
 </Project>
