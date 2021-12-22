@@ -130,38 +130,38 @@ namespace PerlinTests
         }
     }
     
-    [ExcludeFromCodeCoverage]
-    [MarkdownExporterAttribute]
-    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true)]
-    public class PerlinOctaveBenchDoublePrecision : BaseBenchmark
-    {
-        [Params(1, 2, 3, 4, 5, 6, 7, 8)]
-        public int nOctaves;
-        
-        [Benchmark]
-        public double AVX2DynamicDoublePrecision()
-        {
-            double results;
-            results = Perlin.OctavePerlinAVXDynamic(_xsd[0], _ysd[0], _zsd[0], nOctaves);
-            return results;
-        }
-        
-        [Benchmark]
-        public double AVX2DynamicDoublePrecisionBlend()
-        {
-            double results;
-            results = Perlin.OctavePerlinAVXDynamicBlend(_xsd[0], _ysd[0], _zsd[0], nOctaves);
-            return results;
-        }
-
-        [Benchmark(Baseline = true)]
-        public double RegularDoublePrecision()
-        {
-            double results;
-            results = Perlin.OctavePerlin(_xsd[0], _ysd[0], _zsd[0], nOctaves);
-            return results;
-        }
-    }
+    // [ExcludeFromCodeCoverage]
+    // [MarkdownExporterAttribute]
+    // [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true)]
+    // public class PerlinOctaveBenchDoublePrecision : BaseBenchmark
+    // {
+    //     [Params(1, 2, 3, 4, 5, 6, 7, 8)]
+    //     public int nOctaves;
+    //     
+    //     [Benchmark]
+    //     public double AVX2DynamicDoublePrecision()
+    //     {
+    //         double results;
+    //         results = Perlin.OctavePerlinAVXDynamic(_xsd[0], _ysd[0], _zsd[0], nOctaves);
+    //         return results;
+    //     }
+    //     
+    //     [Benchmark]
+    //     public double AVX2DynamicDoublePrecisionBlend()
+    //     {
+    //         double results;
+    //         results = Perlin.OctavePerlinAVXDynamicBlend(_xsd[0], _ysd[0], _zsd[0], nOctaves);
+    //         return results;
+    //     }
+    //
+    //     [Benchmark(Baseline = true)]
+    //     public double RegularDoublePrecision()
+    //     {
+    //         double results;
+    //         results = Perlin.OctavePerlin(_xsd[0], _ysd[0], _zsd[0], nOctaves);
+    //         return results;
+    //     }
+    // }
     
     //public class PerlinOctaveBenchSse : BaseBenchmark
     //{

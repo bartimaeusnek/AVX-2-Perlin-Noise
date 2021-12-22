@@ -375,39 +375,39 @@ namespace PerlinTests
                         }
         }
 
-        [TestMethod]
-        public void TestOctavesDynamicDouble()
-        {
-            for (double xV = -10d; xV < 10d; xV += 0.1d)
-                for (double yV = -10d; yV < 10d; yV += 0.1d)
-                    for (double zV = -10d; zV < 10d; zV += 0.1d)
-                    {
-                        var result = Perlin.perlinAVX(
-                                                      VectorUtils.LoadVectorCorrectly(xV),
-                                                      VectorUtils.LoadVectorCorrectly(yV),
-                                                      VectorUtils.LoadVectorCorrectly(zV)
-                                                     );
-                        var prl = Perlin.perlin(xV, yV, zV);
-                        
-                        Assert.AreEqual(
-                                        prl, result.GetElement(0), 0.000001,
-                                        $"xV = {xV}, yV = {yV}, zV = {zV}"
-                                       );
-                        
-                        for (int octaves = 1; octaves < 24; octaves++)
-                        {
-
-                            var result2 = Perlin.OctavePerlinAVXDynamic(xV, yV, zV, octaves);
-                            prl = Perlin.OctavePerlin(xV, yV, zV, octaves);
-                        
-                            Assert.AreEqual(
-                                            prl, result2, 0.000001,
-                                            $"xV = {xV}, yV = {yV}, zV = {zV}, Octaves = {octaves}"
-                                           );
-                            
-                        }
-                    }
-        }
+        // [TestMethod]
+        // public void TestOctavesDynamicDouble()
+        // {
+        //     for (double xV = -10d; xV < 10d; xV += 0.1d)
+        //         for (double yV = -10d; yV < 10d; yV += 0.1d)
+        //             for (double zV = -10d; zV < 10d; zV += 0.1d)
+        //             {
+        //                 var result = Perlin.perlinAVX(
+        //                                               VectorUtils.LoadVectorCorrectly(xV),
+        //                                               VectorUtils.LoadVectorCorrectly(yV),
+        //                                               VectorUtils.LoadVectorCorrectly(zV)
+        //                                              );
+        //                 var prl = Perlin.perlin(xV, yV, zV);
+        //                 
+        //                 Assert.AreEqual(
+        //                                 prl, result.GetElement(0), 0.000001,
+        //                                 $"xV = {xV}, yV = {yV}, zV = {zV}"
+        //                                );
+        //                 
+        //                 for (int octaves = 1; octaves < 24; octaves++)
+        //                 {
+        //
+        //                     var result2 = Perlin.OctavePerlinAVXDynamic(xV, yV, zV, octaves);
+        //                     prl = Perlin.OctavePerlin(xV, yV, zV, octaves);
+        //                 
+        //                     Assert.AreEqual(
+        //                                     prl, result2, 0.000001,
+        //                                     $"xV = {xV}, yV = {yV}, zV = {zV}, Octaves = {octaves}"
+        //                                    );
+        //                     
+        //                 }
+        //             }
+        // }
 
         [TestMethod]
         public void TestPerlinBound()
