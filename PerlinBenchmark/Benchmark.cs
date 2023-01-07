@@ -1,9 +1,5 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Intrinsics;
-using System.Runtime.Intrinsics.X86;
 using AVXPerlinNoise;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
@@ -13,7 +9,11 @@ using BenchmarkDotNet.Running;
 namespace PerlinTests
 {
     [ExcludeFromCodeCoverage]
-    [MarkdownExporterAttribute]
+    [MarkdownExporter]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net50)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net60)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net70)]
     public class Grad : BaseBenchmark
     {
         [Benchmark]
@@ -35,7 +35,12 @@ namespace PerlinTests
         }
     }
 
-    [ExcludeFromCodeCoverage][MarkdownExporterAttribute]
+    [ExcludeFromCodeCoverage]
+    [MarkdownExporter]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net50)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net60)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net70)]
     public class Lerp : BaseBenchmark
     {
         [Benchmark]
@@ -58,7 +63,11 @@ namespace PerlinTests
     }
 
     [ExcludeFromCodeCoverage]
-    [MarkdownExporterAttribute]
+    [MarkdownExporter]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net50)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net60)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net70)]
     public class Fade : BaseBenchmark
     {
         [Benchmark]
@@ -81,7 +90,11 @@ namespace PerlinTests
     }
 
     [ExcludeFromCodeCoverage]
-    [MarkdownExporterAttribute]
+    [MarkdownExporter]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net50)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net60)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net70)]
     public class PerlinBench : BaseBenchmark
     {
         [Benchmark]
@@ -104,13 +117,14 @@ namespace PerlinTests
     }
 
     [ExcludeFromCodeCoverage]
-    [MarkdownExporterAttribute]
-    //[SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true)]
-    //[SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net50)]
+    [MarkdownExporter]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net50)]
     [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net60)]
+    [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.Net70)]
     public class PerlinOctaveBench : BaseBenchmark
     {
-        [Params(/*1, 2, 3, 4, 5, 6, 7,*/ 8)]
+        [Params(1, 2, 4, 8, 16, 32)]
         public int nOctaves;
         
         [Benchmark]
@@ -129,82 +143,17 @@ namespace PerlinTests
             return results;
         }
     }
-    
-    // [ExcludeFromCodeCoverage]
-    // [MarkdownExporterAttribute]
-    // [SimpleJob(RunStrategy.Throughput, RuntimeMoniker.NetCoreApp31, baseline: true)]
-    // public class PerlinOctaveBenchDoublePrecision : BaseBenchmark
-    // {
-    //     [Params(1, 2, 3, 4, 5, 6, 7, 8)]
-    //     public int nOctaves;
-    //     
-    //     [Benchmark]
-    //     public double AVX2DynamicDoublePrecision()
-    //     {
-    //         double results;
-    //         results = Perlin.OctavePerlinAVXDynamic(_xsd[0], _ysd[0], _zsd[0], nOctaves);
-    //         return results;
-    //     }
-    //     
-    //     [Benchmark]
-    //     public double AVX2DynamicDoublePrecisionBlend()
-    //     {
-    //         double results;
-    //         results = Perlin.OctavePerlinAVXDynamicBlend(_xsd[0], _ysd[0], _zsd[0], nOctaves);
-    //         return results;
-    //     }
-    //
-    //     [Benchmark(Baseline = true)]
-    //     public double RegularDoublePrecision()
-    //     {
-    //         double results;
-    //         results = Perlin.OctavePerlin(_xsd[0], _ysd[0], _zsd[0], nOctaves);
-    //         return results;
-    //     }
-    // }
-    
-    //public class PerlinOctaveBenchSse : BaseBenchmark
-    //{
-    //    [Params(1, 2, 3, 4, 5, 6, 7, 8)]
-    //    public int nOctaves;
-    //    
-    //    [Benchmark]
-    //    public float Sse()
-    //    {
-    //        float results;
-    //        results = Perlin.OctavePerlinSseDynamic(_as[0], _bs[0], _cs[0], nOctaves);
-    //        return results;
-    //    }
-    //    
-    //    [Benchmark]
-    //    public float SseBlend()
-    //    {
-    //        float results;
-    //        results = Perlin.OctavePerlinSseDynamicBlend(_as[0], _bs[0], _cs[0], nOctaves);
-    //        return results;
-    //    }
-    //    
-    //    
-    //    [Benchmark(Baseline = true)]
-    //    public float RegularDoublePrecision()
-    //    {
-    //        float results;
-    //        results = Perlin.OctavePerlin(_as[0], _bs[0], _cs[0], nOctaves);
-    //        return results;
-    //    }
-    //}
 
     [ExcludeFromCodeCoverage]
     public class Program
     {
         public static void Main(string[] args)
         {
-            // BenchmarkRunner.Run<Grad>();
-            // BenchmarkRunner.Run<Lerp>();
-            // BenchmarkRunner.Run<Fade>();
-            // BenchmarkRunner.Run<PerlinBench>();
+            BenchmarkRunner.Run<Grad>();
+            BenchmarkRunner.Run<Lerp>();
+            BenchmarkRunner.Run<Fade>();
+            BenchmarkRunner.Run<PerlinBench>();
             BenchmarkRunner.Run<PerlinOctaveBench>();
-            // BenchmarkRunner.Run<PerlinOctaveBenchDoublePrecision>();
         }
     }
 }
