@@ -3,9 +3,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using static System.Runtime.Intrinsics.X86.Avx2;
 using static System.Runtime.Intrinsics.X86.Avx;
-using static System.Runtime.Intrinsics.X86.Sse42;
-using static System.Runtime.Intrinsics.X86.Sse41;
-using static System.Runtime.Intrinsics.X86.Sse3;
 using static System.Runtime.Intrinsics.X86.Sse2;
 using static System.Runtime.Intrinsics.X86.Sse;
 
@@ -13,6 +10,10 @@ namespace AVXPerlinNoise
 {
     public class VectorUtils
     {
+        
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector256<int> Create(int[] a)
         {
@@ -25,6 +26,9 @@ namespace AVXPerlinNoise
             }
         }
         
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector128<int> CreateVec128(int[] a)
         {
@@ -36,7 +40,25 @@ namespace AVXPerlinNoise
                 return LoadVector128(add);
             }
         }
-
+        
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe Vector256<float> Create(Span<float> a)
+        {
+            if (a.Length != 8)
+                throw new ArgumentException($"{nameof(a)} needs to hold 8 numbers!");
+            
+            fixed(float* add = &a.GetPinnableReference())
+            {
+                return LoadVector256(add);
+            }
+        }
+        
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector256<float> Create(float[] a)
         {
@@ -49,6 +71,9 @@ namespace AVXPerlinNoise
             }
         }
         
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector256<double> Create(double[] a)
         {
@@ -61,6 +86,9 @@ namespace AVXPerlinNoise
             }
         }
         
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector128<float> CreateVec128(float[] a)
         {
@@ -73,7 +101,10 @@ namespace AVXPerlinNoise
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector128<float> LoadVector128Correctly(float count)
         {
             var tobe = stackalloc float[1];
@@ -81,7 +112,10 @@ namespace AVXPerlinNoise
             return BroadcastScalarToVector128(tobe);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector128<int> LoadVector128Correctly(int count)
         {
             var tobe = stackalloc int[1];
@@ -89,15 +123,21 @@ namespace AVXPerlinNoise
             return BroadcastScalarToVector128(tobe);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector256<float> LoadVectorCorrectly(float count)
         {
             var tobe = stackalloc float[1];
             tobe[0] = count;
             return BroadcastScalarToVector256(tobe);
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector256<double> LoadVectorCorrectly(double count)
         {
             var tobe = stackalloc double[1];
@@ -105,7 +145,10 @@ namespace AVXPerlinNoise
             return BroadcastScalarToVector256(tobe);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector256<int> LoadVectorCorrectly(int count)
         {
             var tobe = stackalloc int[1];
@@ -113,7 +156,10 @@ namespace AVXPerlinNoise
             return BroadcastScalarToVector256(tobe);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector256<long> LoadVectorCorrectly(long count)
         {
             var tobe = stackalloc long[1];
@@ -121,7 +167,10 @@ namespace AVXPerlinNoise
             return BroadcastScalarToVector256(tobe);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector128<float> LoadVector128WithMod(float count, float mod)
         {
             var countV = LoadVector128Correctly(count);
@@ -134,7 +183,10 @@ namespace AVXPerlinNoise
             return Multiply(LoadVector128(tobe), countV);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector256<float> LoadVectorWithMod(float count, float mod)
         {
             var countV = LoadVectorCorrectly(count);
@@ -151,7 +203,10 @@ namespace AVXPerlinNoise
             return Multiply(LoadVector256(tobe), countV);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector256<double> LoadVectorWithMod(double count, double mod)
         {
             var countV = LoadVectorCorrectly(count);
@@ -164,15 +219,24 @@ namespace AVXPerlinNoise
             return Multiply(LoadVector256(tobe), countV);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector256<float> LoadVectorWithModScale(float count, float mod, float initial , float scale) 
             => Divide(Multiply(LoadVectorWithMod(count, mod), LoadVectorCorrectly(initial)), LoadVectorCorrectly(scale));
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector256<double> LoadVectorWithModScale(double count, double mod, double initial , double scale) 
             => Divide(Multiply(LoadVectorWithMod(count, mod), LoadVectorCorrectly(initial)), LoadVectorCorrectly(scale));
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+        [SkipLocalsInit]
+#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector128<float> LoadVector128WithModScale(float count, float mod, float initial , float scale) 
             => Divide(Multiply(LoadVector128WithMod(count, mod), LoadVector128Correctly(initial)), LoadVector128Correctly(scale));
     }

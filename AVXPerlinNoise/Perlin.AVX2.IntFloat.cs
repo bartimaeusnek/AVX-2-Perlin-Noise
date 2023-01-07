@@ -28,15 +28,23 @@ namespace AVXPerlinNoise
 		private static readonly Vector256<float> v15f = LoadVectorCorrectly(15f);
 		private static readonly Vector256<int>   v15  = LoadVectorCorrectly(15);
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static Vector256<int> MakeBitCutVector(Vector256<float> x)
 			=> And(ConvertToVector256Int32WithTruncation(Floor(x)), v255);
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static Vector256<float> MakeFloatCutVector(Vector256<float> x)
 			=> Subtract(x, ConvertToVector256Single(ConvertToVector256Int32WithTruncation(Floor(x))));
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
 		public static Vector256<float> perlinAVX(Vector256<float> x, Vector256<float> y, Vector256<float> z)
 		{
 #region Perlin Setup
@@ -88,12 +96,18 @@ namespace AVXPerlinNoise
 #endregion
 			return Divide(Add(lerpAVX(y1, y2, w), v1f), v2f);
 		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static Vector256<float> lerpAVX(Vector256<float> a, Vector256<float> b, Vector256<float> x)
 			=> Add(a, Multiply(x, Subtract(b, a)));
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static Vector256<float> fadeAVX(Vector256<float> t)
 			=> Multiply(
 			            Multiply(
@@ -118,11 +132,17 @@ namespace AVXPerlinNoise
 			               )
 			           );
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static Vector256<int> UnpackPermutationArrayAndAdd(Vector256<int> xi, Vector256<int> yi)
 			=> Add(UnpackPermutationArray(xi), yi);
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static unsafe Vector256<int> UnpackPermutationArray(Vector256<int> xi)
 		{
 			fixed (int* pData = &p[0])
@@ -131,7 +151,10 @@ namespace AVXPerlinNoise
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static Vector256<float> gradAVXUVector(Vector256<int> hashs, Vector256<float> xs, Vector256<float> ys)
 		{
 			var h   = CompareGreaterThan(v8, hashs);
@@ -142,7 +165,10 @@ namespace AVXPerlinNoise
 			return Add(usX, usY);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static Vector256<float> gradAVXVVector(Vector256<int>   hashs, Vector256<float> xs, Vector256<float> ys,
 		                                                Vector256<float> zs)
 		{
@@ -159,7 +185,10 @@ namespace AVXPerlinNoise
 			return Add(Add(Add(vsX1, vsX2), And(ssbh.AsSingle(), ys)), AndNot(zMask.AsSingle(), zs));
 		}
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static Vector256<float> gradAVXPartialA(Vector256<int> hashs, Vector256<float> u)
 		{
 			var hAnd1  = And(hashs, v1);
@@ -171,7 +200,10 @@ namespace AVXPerlinNoise
 			return Add(ucomp, ucompneg);
 		}
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static Vector256<float> gradAVXPartialB(Vector256<int> hashs, Vector256<float> u)
 		{
 			var hAnd1  = And(hashs, v2);
@@ -183,7 +215,10 @@ namespace AVXPerlinNoise
 			return Add(ucomp, ucompneg);
 		}
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static Vector256<float> gradAVX(Vector256<int>   hashs, Vector256<float> xs, Vector256<float> ys,
 		                                         Vector256<float> zs)
 		{
@@ -195,11 +230,17 @@ namespace AVXPerlinNoise
 			return Add(gradAVXPartialA(hs, u), gradAVXPartialB(hs, v));
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static float SumVector(Vector256<float> v)
 			=> SumVectorInternal(v).GetElement(0);
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static Vector256<float> SumVectorInternal(Vector256<float> v)
 		{
 			var x = Permute2x128(v, v, 1);
@@ -210,10 +251,12 @@ namespace AVXPerlinNoise
 			return Add(x, y);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
 		public static unsafe float OctavePerlinAVXDynamic(float x,                  float y, float z, int nOctaves = 1,
-		                                                  float persistence = 0.5f, float lacunarity = 2.0f,
-		                                                  float scale       = 10.0f)
+														  float persistence = 0.5f, float lacunarity = 2.0f,
+														  float scale       = 10.0f)
 		{
 			var freq      = stackalloc float[1]{1f};
 			var amp       = stackalloc float[1]{1f};
@@ -263,7 +306,9 @@ namespace AVXPerlinNoise
 			return *total / *max;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
 		public static unsafe float OctavePerlinAVXDynamicBlend(float x,                  float y, float z, int nOctaves = 1,
 		                                                  float persistence = 0.5f, float lacunarity = 2.0f,
 		                                                  float scale       = 10.0f)
@@ -276,23 +321,9 @@ namespace AVXPerlinNoise
 
 			var octaveBitmask       = stackalloc byte[1] {0};
 			var intermediateProduct  = stackalloc int[1] {0};
-			//var octaveVectorPtr  = stackalloc float[8] {0,0,0,0,0,0,0,0};
 			var vecZero             = Vector256<float>.Zero;
 			do
 			{
-
-				//Vector256<float> octaveVector;
-				//if (nOctaves >= 8)
-				//	octaveVector = LoadVectorCorrectly(1f);
-				//else
-				//{
-				//	for (int j = 0; j < (nOctaves-1); j++)
-				//	{
-				//		*(octaveVectorPtr + j) = 1;
-				//	}
-				//	octaveVector = LoadVector256(octaveVectorPtr);
-				//}
-				
 				*intermediateProduct = nOctaves - (*i - 1);
 				if (*intermediateProduct >= 8)
 				{
@@ -321,9 +352,6 @@ namespace AVXPerlinNoise
 				var ampVector   = LoadVectorWithMod(*amp, persistence);
 				var totalVector = Multiply(ampVector, valueVector);
 
-				//ampVector   = Multiply(octaveVector, ampVector);
-				//totalVector = Multiply(octaveVector, totalVector);
-				
 				ampVector   = Blend(vecZero, ampVector,   *octaveBitmask);
 				totalVector = Blend(vecZero, totalVector, *octaveBitmask);
 				
@@ -341,7 +369,10 @@ namespace AVXPerlinNoise
 			return *total / *max;
 		}
 		
-		[Obsolete("use OctavePerlinAVXDynamic instead!")][MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		[Obsolete("use OctavePerlinAVXDynamic instead!")]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
 		public static unsafe float OctavePerlinAVX(float x, float y, float z, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
 		{
 			if (nOctaves % 8 != 0)
@@ -376,7 +407,33 @@ namespace AVXPerlinNoise
 			return *total / *max;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		public static unsafe void OctavePerlinAVX(Vector256<float> x, Vector256<float> y, Vector256<float> z, Span<float> results, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
+		{
+			if (results.Length < 8)
+				throw new ArgumentException($"{nameof(results)} needs to hold at least 8 numbers, but holds only {results.Length}!");
+
+			fixed (float* ptr = &results.GetPinnableReference())
+				Store(ptr, OctavePerlinAVXParallel(x, y, z, nOctaves, persistence, lacunarity, scale));
+		}
+		
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
+		public static unsafe void OctavePerlinAVX(float[] x, float[] y, float[] z, float[] results, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
+		{
+			if (results.Length < 8)
+				throw new ArgumentException($"{nameof(results)} needs to hold at least 8 numbers!");
+
+			fixed (float* ptr = &results[0])
+				Store(ptr, OctavePerlinAVXParallel(Create(x), Create(y), Create(z), nOctaves, persistence, lacunarity, scale));
+		}
+
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
 		public static unsafe float[] OctavePerlinAVX(Vector256<float> x, Vector256<float> y, Vector256<float> z, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
 		{
 			var results = new float[8];
@@ -387,7 +444,9 @@ namespace AVXPerlinNoise
 			return results;
 		}
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NET5_0_OR_GREATER
+		[SkipLocalsInit]
+#endif
 		public static Vector256<float> OctavePerlinAVXParallel(Vector256<float> x,Vector256<float> y,Vector256<float> z, int nOctaves = 8, float persistence = 0.5f,float lacunarity = 2.0f,float scale = 10.0f)
 		{
 			var freq  = v1f;
@@ -399,7 +458,6 @@ namespace AVXPerlinNoise
 			var scaleV = LoadVectorCorrectly(scale);
 			for (var i = 0; i < nOctaves; ++i)
 			{
-
 				var cX = Divide(Multiply(x, freq), scaleV);
 				var cY = Divide(Multiply(y, freq), scaleV);
 				var cZ = Divide(Multiply(z, freq), scaleV);
@@ -414,10 +472,10 @@ namespace AVXPerlinNoise
 			return Divide(total, max);
 		}
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float PseudoPow8(float a) => a * a * a * a * a * a * a * a;
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float PseudoPow(float a, int b)
 		{
 			for (int i = 0; i < b; i++)
