@@ -8,15 +8,17 @@
         <Authors>bartimaeusnek</Authors>
         <Description>A AVX2 improved implementation of Perlin's Noise. It's faster :)
  LGPL3 licensed.</Description>
-        <Copyright>2020 bartimaeusnek</Copyright>
+        <Copyright>2020-2023 bartimaeusnek</Copyright>
         <PackageProjectUrl>https://github.com/bartimaeusnek/AVX-2-Perlin-Noise</PackageProjectUrl>
         <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/bartimaeusnek/AVX-2-Perlin-Noise</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>perlin, noise, perlin-noise, avx2, lgplv3</PackageTags>
-        <PackageVersion>1.1.0</PackageVersion>
-        <AssemblyVersion>1.1.0</AssemblyVersion>
-        <TargetFrameworks>net5.0;net6.0;netcoreapp3.1</TargetFrameworks>
+        <PackageVersion>1.1.1</PackageVersion>
+        <AssemblyVersion>1.1.1</AssemblyVersion>
+        <TargetFrameworks>net5.0;net6.0;net7.0;netcoreapp3.1</TargetFrameworks>
+        <Configurations>Release;Debug</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
 </Project>
