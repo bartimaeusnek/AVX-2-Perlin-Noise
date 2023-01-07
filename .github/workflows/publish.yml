@@ -1,0 +1,26 @@
+name: Publish nuget packages
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+      - name: Build
+        run: dotnet build AVXPerlinNoise/AVXPerlinNoise.csproj -c Release
+      - name: Pack
+        run: dotnet pack AVXPerlinNoise/AVXPerlinNoise.csproj -c Release
+      - name: Prep packages
+        run: dotnet nuget add source --username bartimaeusnek --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/bartimaeusnek/index.json"
+      - name: Publish to GitHub packages
+        run: dotnet nuget push AVXPerlinNoise/bin/Release/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }}  --source "github"
+      - name: Publish to nuget
+        run: dotnet nuget push AVXPerlinNoise/bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source 'https://api.nuget.org/v3/index.json'
