@@ -14,11 +14,24 @@
         <RepositoryUrl>https://github.com/bartimaeusnek/AVX-2-Perlin-Noise</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>perlin, noise, perlin-noise, avx2, lgplv3</PackageTags>
-        <PackageVersion>1.1.1</PackageVersion>
-        <AssemblyVersion>1.1.1</AssemblyVersion>
-        <TargetFrameworks>net5.0;net6.0;net7.0;netcoreapp3.1</TargetFrameworks>
+        <PackageVersion>2.0.0</PackageVersion>
+        <AssemblyVersion>2.0.0</AssemblyVersion>
+        <LangVersion>10</LangVersion>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
         <Configurations>Release;Debug</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Update="Perlin.AVX2.IntFloat.cs">
+        <DependentUpon>Perlin.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Perlin.Disposeable.cs">
+        <DependentUpon>Perlin.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Perlin.OptimizeLogic.cs">
+        <DependentUpon>Perlin.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
 
 </Project>
