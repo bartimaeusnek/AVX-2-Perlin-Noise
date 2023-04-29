@@ -15,8 +15,10 @@ public class VectorUtils
     public static unsafe Vector256<int> Create(int[] a)
     {
         if (a.Length != 8)
+        {
             throw new ArgumentException($"{nameof(a)} needs to hold 8 numbers!");
-            
+        }
+
         fixed(int* add = &a[0])
         {
             return LoadVector256(add);
@@ -28,8 +30,10 @@ public class VectorUtils
     public static unsafe Vector128<int> CreateVec128(int[] a)
     {
         if (a.Length != 4)
+        {
             throw new ArgumentException($"{nameof(a)} needs to hold 4 numbers!");
-            
+        }
+
         fixed(int* add = &a[0])
         {
             return LoadVector128(add);
@@ -41,8 +45,10 @@ public class VectorUtils
     public static unsafe Vector256<float> Create(Span<float> a)
     {
         if (a.Length != 8)
+        {
             throw new ArgumentException($"{nameof(a)} needs to hold 8 numbers!");
-            
+        }
+
         fixed(float* add = &a.GetPinnableReference())
         {
             return LoadVector256(add);
@@ -54,8 +60,10 @@ public class VectorUtils
     public static unsafe Vector256<float> Create(float[] a)
     {
         if (a.Length != 8)
+        {
             throw new ArgumentException($"{nameof(a)} needs to hold 8 numbers!");
-            
+        }
+
         fixed(float* add = &a[0])
         {
             return LoadVector256(add);
@@ -67,8 +75,10 @@ public class VectorUtils
     public static unsafe Vector128<float> CreateVec128(float[] a)
     {
         if (a.Length != 4)
+        {
             throw new ArgumentException($"{nameof(a)} needs to hold 4 numbers!");
-            
+        }
+
         fixed(float* add = &a[0])
         {
             return LoadVector128(add);

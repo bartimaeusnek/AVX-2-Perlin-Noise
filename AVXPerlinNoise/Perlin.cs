@@ -187,19 +187,27 @@ public unsafe partial class Perlin
 
 	[ExcludeFromCodeCoverage]
 	public static double gradu(int hash, double x, double y)
-		=> hash < 8 ? x : y;
+	{
+		return hash < 8 ? x : y;
+	}
 
 	[ExcludeFromCodeCoverage]
 	public static double gradVY(int hash, double y)
-		=> hash < 4 ? y : 0;
+	{
+		return hash < 4 ? y : 0;
+	}
 
 	[ExcludeFromCodeCoverage]
 	public static double gradVX(int hash, double x)
-		=> hash == 12 || hash == 14 ? x : 0;
+	{
+		return hash == 12 || hash == 14 ? x : 0;
+	}
 
 	[ExcludeFromCodeCoverage]
 	public static double gradVZ(int hash, double z)
-		=> !(hash < 4 || hash == 12 || hash == 14) ? z : 0;
+	{
+		return !(hash < 4 || hash == 12 || hash == 14) ? z : 0;
+	}
 
 	[ExcludeFromCodeCoverage]
 	public static float grad(int hash, float x, float y, float z)
@@ -210,11 +218,17 @@ public unsafe partial class Perlin
 		float v;
 
 		if (h < 4)
+		{
 			v = y;
+		}
 		else if (h == 12 || h == 14)
+		{
 			v = x;
+		}
 		else
+		{
 			v = z;
+		}
 
 		return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
 	}
@@ -232,12 +246,18 @@ public unsafe partial class Perlin
 		// expanded it for readability.
 
 		if (h < 4 /* 0b0100 */) // If the first and second signifigant bits are 0 set v = y
+		{
 			v = y;
+		}
 		else if (h == 12 /* 0b1100 */ || h == 14 /* 0b1110*/
 		)                                        // If the first and second signifigant bits are 1 set v = x
+		{
 			v = x;
+		}
 		else // If the first and second signifigant bits are not equal (0/1, 1/0) set v = z
+		{
 			v = z;
+		}
 
 		return
 			((h & 1) == 0 ? u : -u) +
@@ -249,24 +269,34 @@ public unsafe partial class Perlin
 
 	[ExcludeFromCodeCoverage]
 	public static float lerp(float a, float b, float x)
-		=> a + x * (b - a);
+	{
+		return a + x * (b - a);
+	}
 
 	[ExcludeFromCodeCoverage]
 	public static double lerp(double a, double b, double x)
-		=> a + x * (b - a);
+	{
+		return a + x * (b - a);
+	}
 
 	[ExcludeFromCodeCoverage]
 	public static float fade(float t)
-		=> t * t * t * (t * (t * 6 - 15) + 10);
+	{
+		return t * t * t * (t * (t * 6 - 15) + 10);
+	}
 
 	[ExcludeFromCodeCoverage]
-	public static double fade(double t)
-		// Fade function as defined by Ken Perlin.  This eases coordinate values
-		// so that they will "ease" towards integral values.  This ends up smoothing
-		// the final output.
-		=> t * t * t * (t * (t * 6 - 15) + 10); // 6t^5 - 15t^4 + 10t^3
+	public static double fade(double t) // Fade function as defined by Ken Perlin.  This eases coordinate values
+	// so that they will "ease" towards integral values.  This ends up smoothing
+	// the final output.
+	{
+	return t * t * t * (t * (t * 6 - 15) + 10);
+	// 6t^5 - 15t^4 + 10t^3
+	}
 
 	[ExcludeFromCodeCoverage]
 	public static double gradV(int h, double x, double y, double z)
-		=> h < 4 ? y : h == 12 || h == 14 ? x : z;
+	{
+		return h < 4 ? y : h == 12 || h == 14 ? x : z;
+	}
 }

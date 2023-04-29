@@ -28,13 +28,17 @@ public partial class Perlin
 	[SkipLocalsInit]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	internal static Vector256<int> MakeBitCutVector(Vector256<float> x)
-		=> And(ConvertToVector256Int32WithTruncation(Floor(x)), v255);
-		
+	{
+		return And(ConvertToVector256Int32WithTruncation(Floor(x)), v255);
+	}
+
 	[SkipLocalsInit]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	internal static Vector256<float> MakeFloatCutVector(Vector256<float> x)
-		=> Subtract(x, ConvertToVector256Single(ConvertToVector256Int32WithTruncation(Floor(x))));
-		
+	{
+		return Subtract(x, ConvertToVector256Single(ConvertToVector256Int32WithTruncation(Floor(x))));
+	}
+
 	[SkipLocalsInit]
 	public Vector256<float> perlinAVX(Vector256<float> x, Vector256<float> y, Vector256<float> z)
 	{
@@ -91,12 +95,15 @@ public partial class Perlin
 	[SkipLocalsInit]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	internal static Vector256<float> lerpAVX(Vector256<float> a, Vector256<float> b, Vector256<float> x)
-		=> Add(a, Multiply(x, Subtract(b, a)));
+	{
+		return Add(a, Multiply(x, Subtract(b, a)));
+	}
 
 	[SkipLocalsInit]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	internal static Vector256<float> fadeAVX(Vector256<float> t)
-		=> Multiply(
+	{
+		return Multiply(
 			Multiply(
 				Multiply(
 					t,
@@ -118,11 +125,14 @@ public partial class Perlin
 				v10f
 			)
 		);
+	}
 
 	[SkipLocalsInit]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	internal Vector256<int> UnpackPermutationArrayAndAdd(Vector256<int> xi, Vector256<int> yi)
-		=> Add(UnpackPermutationArray(xi), yi);
+	{
+		return Add(UnpackPermutationArray(xi), yi);
+	}
 
 	[SkipLocalsInit]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -203,7 +213,9 @@ public partial class Perlin
 	[SkipLocalsInit]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	internal static float SumVector(Vector256<float> v)
-		=> SumVectorInternal(v).GetElement(0);
+	{
+		return SumVectorInternal(v).GetElement(0);
+	}
 
 	[SkipLocalsInit]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -222,130 +234,80 @@ public partial class Perlin
 											   float persistence = 0.5f, float lacunarity = 2.0f,
 											   float scale = 10.0f)
 	{
-		var freq = stackalloc float[1] { 1f };
-		var amp = stackalloc float[1] { 1f };
-		var max = stackalloc float[1] { 0.0f };
-		var total = stackalloc float[1] { 0.0f };
-		var i = stackalloc int[1] { 1 };
-		
+		float freq = 1f;
+		float amp = 1f;
+		float max = 0.0f;
+		float total = 0.0f;
+		int i = 1;
+		Unsafe.InitBlock(_octaveVectorPtr, 0, 8 * sizeof(float));
+		var octaveVector = v1f;
+		int octLoad;
 		do
 		{
-			Vector256<float> octaveVector;
-			if (nOctaves - (*i - 1) >= 8)
-				octaveVector = LoadVectorCorrectly(1f);
-			else
+			octLoad = nOctaves - (i - 1);
+			if (octLoad < 8)
 			{
-				for (int j = 0; j < nOctaves - (*i - 1); j++)
+				for (int j = 0; j < octLoad; j++)
 				{
-					*(_octaveVectorPtr + j) = 1;
+					*(_octaveVectorPtr + j) = 1f;
 				}
 				octaveVector = LoadAlignedVector256(_octaveVectorPtr);
 			}
 
 			var valueVector = perlinAVX(
-				LoadVectorWithModScale(x, lacunarity, *freq, scale),
-				LoadVectorWithModScale(y, lacunarity, *freq, scale),
-				LoadVectorWithModScale(z, lacunarity, *freq, scale)
+				LoadVectorWithModScale(x, lacunarity, freq, scale),
+				LoadVectorWithModScale(y, lacunarity, freq, scale),
+				LoadVectorWithModScale(z, lacunarity, freq, scale)
 			);
 
-			var ampVector = LoadVectorWithMod(*amp, persistence);
+			var ampVector = LoadVectorWithMod(amp, persistence);
 			var totalVector = Multiply(ampVector, valueVector);
 
 			ampVector = Multiply(octaveVector, ampVector);
 			totalVector = Multiply(octaveVector, totalVector);
 
-			*max += SumVector(ampVector);
-			*total += SumVector(totalVector);
-			*i += 8;
+			max += SumVector(ampVector);
+			total += SumVector(totalVector);
+			i += 8;
 
-			if (*i > nOctaves)
+			if (i > nOctaves)
+			{
 				break;
+			}
 
-			*amp *= PseudoPow8(persistence);
-			*freq *= PseudoPow8(lacunarity);
+			amp *= PseudoPow8(persistence);
+			freq *= PseudoPow8(lacunarity);
 		} while (true);
 
-		return *total / *max;
+		return total / max;
 	}
 
-	[SkipLocalsInit]
-	public unsafe float OctavePerlinAVXDynamicBlend(float x,                  float y, float z, int nOctaves = 1,
-														   float persistence = 0.5f, float lacunarity = 2.0f,
-														   float scale       = 10.0f)
-	{
-		var freq      = stackalloc float[1]{1f};
-		var amp       = stackalloc float[1]{1f};
-		var i           = stackalloc int[1]{1};
-		var max       = stackalloc float[1]{0.0f};
-		var total     = stackalloc float[1]{0.0f};
-
-		var octaveBitmask       = stackalloc byte[1] {0};
-		var intermediateProduct  = stackalloc int[1] {0};
-		do
-		{
-			*intermediateProduct = nOctaves - (*i - 1);
-			if (*intermediateProduct >= 8)
-			{
-				*octaveBitmask = 0xff;
-			}
-			else
-			{
-				*octaveBitmask = *intermediateProduct switch
-				{
-					7 => 0b0111_1111,
-					6 => 0b0011_1111,
-					5 => 0b0001_1111,
-					4 => 0b0000_1111,
-					3 => 0b0000_0111,
-					2 => 0b0000_0011,
-					_ => 0b0000_0001
-				};
-			}
-				
-			var valueVector = perlinAVX(
-				LoadVectorWithModScale(x, lacunarity, *freq, scale),
-				LoadVectorWithModScale(y, lacunarity, *freq, scale),
-				LoadVectorWithModScale(z, lacunarity, *freq, scale)
-			);
-
-			var ampVector   = LoadVectorWithMod(*amp, persistence);
-			var totalVector = Multiply(ampVector, valueVector);
-
-			ampVector   = Blend(v0f, ampVector,   *octaveBitmask);
-			totalVector = Blend(v0f, totalVector, *octaveBitmask);
-				
-			*max   += SumVector(ampVector);
-			*total += SumVector(totalVector);
-			*i     += 8;
-				
-			if (*i > nOctaves)
-				break;
-				
-			*amp  *= PseudoPow8(persistence);
-			*freq *= PseudoPow8(lacunarity);
-		} while (true);
-
-		return *total / *max;
-	}
-	
 	[SkipLocalsInit]
 	public unsafe void OctavePerlinAVX(Vector256<float> x, Vector256<float> y, Vector256<float> z, Span<float> results, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
 	{
 		if (results.Length < 8)
+		{
 			throw new ArgumentException($"{nameof(results)} needs to hold at least 8 numbers, but holds only {results.Length}!");
+		}
 
 		fixed (float* ptr = &results.GetPinnableReference())
+		{
 			Store(ptr, OctavePerlinAVXParallel(x, y, z, nOctaves, persistence, lacunarity, scale));
+		}
 	}
 		
 	[SkipLocalsInit]
 	public unsafe void OctavePerlinAVX(float[] x, float[] y, float[] z, float[] results, int nOctaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float scale = 10.0f)
 	{
 		if (results.Length < 8)
+		{
 			throw new ArgumentException($"{nameof(results)} needs to hold at least 8 numbers!");
+		}
 
 		fixed (float* ptr = &results[0])
+		{
 			Store(ptr, OctavePerlinAVXParallel(Create(x), Create(y), Create(z), nOctaves, persistence, lacunarity, scale));
+		}
 	}
 
 	[SkipLocalsInit]
@@ -386,7 +348,10 @@ public partial class Perlin
 	}
 		
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static float PseudoPow8(float a) => a * a * a * a * a * a * a * a;
+	public static float PseudoPow8(float a)
+	{
+		return a * a * a * a * a * a * a * a;
+	}
 
 	[SkipLocalsInit]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -403,9 +368,12 @@ public partial class Perlin
 		_tobe[7] = mod * mod * mod * mod * mod * mod * mod;
 		return Multiply(LoadAlignedVector256(_tobe), countV);
 	}
+	
 	[SkipLocalsInit]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public Vector256<float> LoadVectorWithModScale(float count, float mod, float initial , float scale) 
-		=> Divide(Multiply(LoadVectorWithMod(count, mod), LoadVectorCorrectly(initial)), LoadVectorCorrectly(scale));
+	public Vector256<float> LoadVectorWithModScale(float count, float mod, float initial , float scale)
+	{
+		return Divide(Multiply(LoadVectorWithMod(count, mod), LoadVectorCorrectly(initial)), LoadVectorCorrectly(scale));
+	}
 
 }

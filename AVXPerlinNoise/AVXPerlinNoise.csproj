@@ -29,6 +29,9 @@
       <Compile Update="Perlin.Disposeable.cs">
         <DependentUpon>Perlin.cs</DependentUpon>
       </Compile>
+      <Compile Update="Perlin.OptimizeLogic.cs">
+        <DependentUpon>Perlin.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

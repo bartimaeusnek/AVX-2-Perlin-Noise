@@ -337,9 +337,26 @@ namespace PerlinTests
                 Assert.AreEqual(prl, resultParallel.GetElement(i));
             }
         }
+        
+        [TestMethod]
+        public void TestOctavesDynamicFast()
+        {
+            using var perlin = new Perlin();
+            for (float xV = -5f; xV < 5f; xV += 0.25f)
+                for (float yV = -5f; yV < 5f; yV += 0.25f)
+                    for (float zV = -5f; zV < 5f; zV += 0.25f)
+                        for (int octaves = 1; octaves < 9; octaves++)
+                        {
+                            var result = perlin.OctavePerlinAVXDynamic(xV, yV, zV, octaves);
+                            var prl    = perlin.OctavePerlin(xV, yV, zV, octaves);
+                            Assert.AreEqual(prl, result, 0.000001,
+                                            $"xV = {xV}, yV = {yV}, zV = {zV}, Octaves = {octaves}");
+                        }
+        }
 
         [TestMethod]
-        public void TestOctavesDynamic()
+        // [Ignore]
+        public void TestOctavesDynamicFine()
         {
             using var perlin = new Perlin();
             for (float xV = -10f; xV < 10f; xV += 0.1f)
